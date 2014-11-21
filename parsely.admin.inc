@@ -19,20 +19,20 @@ function parsely_admin_settings($form, &$form_state) {
     );
 
     if (module_exists('taxonomy')) {
-        $form['parsely_tag_vocabularies'] = array(
-            '#type' => 'checkboxes',
-            '#title' => t('Tag Vocabularies'),
-            '#options' => _parsely_vocab_array_format(taxonomy_get_vocabularies()),
-            '#description' => t('Select which taxonomy vocabularies will be tracked as tags.'),
-            '#default_value' => variable_get('parsely_tag_vocabularies', array()),
-        );
-
         $form['parsely_section_vocabulary'] = array(
             '#type' => 'radios',
             '#title' => t('Section Vocabulary'),
             '#options' => _parsely_vocab_array_format(taxonomy_get_vocabularies()),
             '#description' => t('Select the taxonomy to use for Parse.ly sections. The first term in this vocabulary is used to populate the Parse.ly section variable.'),
             '#default_value' => variable_get('parsely_section_vocabulary', ''),
+        );
+
+        $form['parsely_tag_vocabularies'] = array(
+            '#type' => 'checkboxes',
+            '#title' => t('Tag Vocabularies'),
+            '#options' => _parsely_vocab_array_format(taxonomy_get_vocabularies()),
+            '#description' => t('Select which taxonomy vocabularies will be tracked as tags.'),
+            '#default_value' => variable_get('parsely_tag_vocabularies', array()),
         );
     }
     // TODO: Should display warning if taxonomy module isn't available
