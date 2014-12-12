@@ -11,44 +11,44 @@ define('__PARSELY_VERSION__', '0.1');
  * Implements hook_init().
  */
 function parsely_init() {
-    $apikey = variable_get('parsely_apikey', '');
+  $apikey = variable_get('parsely_apikey', '');
 
-    if (parsely_should_add_metas()) {
-        $parsely_meta = _parsely_get_node_metadata();
-        drupal_add_html_head(array(
-            '#tag' => 'script',
-            '#attributes' => array('type' => 'application/ld+json'),
-            '#value' => json_encode($parsely_meta),
-        ), 'parsely_metadata');
-        drupal_add_html_head(array(
-            '#tag' => 'meta',
-            '#attributes' => array(
-                'name' => 'drupal_parsely_version',
-                'id' => 'drupal_parsely_version',
-                'content' => __PARSELY_VERSION__
-            )
-        ), 'parsely_version');
-    }
+  if (parsely_should_add_metas()) {
+    $parsely_meta = _parsely_get_node_metadata();
+    drupal_add_html_head(array(
+      '#tag' => 'script',
+      '#attributes' => array('type' => 'application/ld+json'),
+      '#value' => json_encode($parsely_meta),
+    ), 'parsely_metadata');
+    drupal_add_html_head(array(
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'name' => 'drupal_parsely_version',
+        'id' => 'drupal_parsely_version',
+        'content' => __PARSELY_VERSION__
+      )
+    ), 'parsely_version');
+  }
 }
 
 /**
  * Implements hook_menu().
  */
 function parsely_menu() {
-    $items['admin/config/system/parsely'] = array(
-        'title' => 'Parse.ly',
-        'description' => 'Parse.ly configuration settings.',
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('parsely_admin_settings'),
-        'access arguments' => array('administer parsely settings'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'parsely.admin.inc',
-    );
-    $items['admin/config/system/parsely/settings'] = array(
-        'title' => 'Settings',
-        'type' => MENU_DEFAULT_LOCAL_TASK,
-    );
-    return $items;
+  $items['admin/config/system/parsely'] = array(
+    'title' => 'Parse.ly',
+    'description' => 'Parse.ly configuration settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('parsely_admin_settings'),
+    'access arguments' => array('administer parsely settings'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'parsely.admin.inc',
+  );
+  $items['admin/config/system/parsely/settings'] = array(
+    'title' => 'Settings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  return $items;
 }
 
 /**
@@ -56,9 +56,9 @@ function parsely_menu() {
  */
 function parsely_permission() {
   return array(
-    'administer parsely settings' => array(
-      'title' => t('Administer Parse.ly settings'),
-    ),
+  'administer parsely settings' => array(
+    'title' => t('Administer Parse.ly settings'),
+  ),
   );
 }
 
@@ -68,39 +68,39 @@ function parsely_permission() {
  * are authenticated here.
  */
 function parsely_should_add_metas() {
-    $node = menu_get_object();
-    if ($node === NULL) {
-        return FALSE;
-    }
+  $node = menu_get_object();
+  if ($node === NULL) {
+    return FALSE;
+  }
 
-    if (empty(variable_get('parsely_apikey', ''))) {
-        return FALSE;
-    }
+  if (empty(variable_get('parsely_apikey', ''))) {
+    return FALSE;
+  }
 
 
-    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
-    if (drupal_match_path($path, implode("\r", parsely_paths_to_ignore()))) {
-        return FALSE;
-    }
+  $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+  if (drupal_match_path($path, implode("\r", parsely_paths_to_ignore()))) {
+    return FALSE;
+  }
 
-    return TRUE;
+  return TRUE;
 }
 
 /**
  * Determines whether or not to place the Parsely JavaScript on a page.
  */
 function parsely_should_track() {
-    if (!parsely_should_add_metas()) {
-        return FALSE;
-    }
+  if (!parsely_should_add_metas()) {
+    return FALSE;
+  }
 
-    // Check whether or not we should track logged in users
-    $should_track_authenticated_users = variable_get('parsely_track_authenticated_users') === '0';
-    if ($should_track_authenticated_users && _parsely_user_is_authenticated()) {
-        return FALSE;
-    }
+  // Check whether or not we should track logged in users
+  $should_track_authenticated_users = variable_get('parsely_track_authenticated_users') === '0';
+  if ($should_track_authenticated_users && _parsely_user_is_authenticated()) {
+    return FALSE;
+  }
 
-    return TRUE;
+  return TRUE;
 }
 
 /**
@@ -108,24 +108,24 @@ function parsely_should_track() {
  * tags.
  */
 function parsely_paths_to_ignore() {
-    return array(
-        'admin*',
-        'node/add*',
-        'node/*/edit*',
-        'node/*/delete*',
-    );
+  return array(
+    'admin*',
+    'node/add*',
+    'node/*/edit*',
+    'node/*/delete*',
+  );
 }
 
 /**
  * Implements hook_page_build to insert Parse.ly's JavaScript tracker.
  */
 function parsely_page_build(&$page) {
-    if (!parsely_should_track()) {
-        return;
-    }
+  if (!parsely_should_track()) {
+    return;
+  }
 
-    $apikey = check_plain(variable_get('parsely_apikey'));
-    $markup = <<<EOT
+  $apikey = check_plain(variable_get('parsely_apikey'));
+  $markup = <<<EOT
 
 <!-- START Parse.ly Include: Standard -->
 <div id="parsely-root" style="display: none">
@@ -134,9 +134,9 @@ function parsely_page_build(&$page) {
 <script>
 (function(s, p, d) {
   var h=d.location.protocol, i=p+"-"+s,
-      e=d.getElementById(i), r=d.getElementById(p+"-root"),
-      u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
-      :"static."+p+".com";
+    e=d.getElementById(i), r=d.getElementById(p+"-root"),
+    u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
+    :"static."+p+".com";
   if (e) return;
   e = d.createElement(s); e.id = i; e.async = true;
   e.src = h+"//"+u+"/p.js"; r.appendChild(e);
@@ -144,45 +144,45 @@ function parsely_page_build(&$page) {
 </script>
 <!-- END Parse.ly Include: Standard -->
 EOT;
-    $page['page_bottom']['parsely'] = array('#markup' => $markup);
+  $page['page_bottom']['parsely'] = array('#markup' => $markup);
 }
 
 
 function _parsely_user_is_authenticated() {
-    // Anonymous users have a uid of 0, anyone else is authenticated
-    global $user;
-    return $user->uid !== 0;
+  // Anonymous users have a uid of 0, anyone else is authenticated
+  global $user;
+  return $user->uid !== 0;
 }
 
 /*** Parsely Metadata Functions **********************************************/
 function _parsely_get_content_id($node) {
-    $prefix = variable_get('parsely_content_id_prefix', '');
-    if (!empty($prefix))
-        $prefix = $prefix.'-';
+  $prefix = variable_get('parsely_content_id_prefix', '');
+  if (!empty($prefix))
+    $prefix = $prefix.'-';
 
-    return $prefix.$node->nid;
+  return $prefix.$node->nid;
 }
 
 function _parsely_get_canonical_url($node) {
-    $uri = entity_uri('node', $node);
-    return url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE)));
+  $uri = entity_uri('node', $node);
+  return url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE)));
 }
 
 function _parsely_get_authors($node) {
-    return array($node->name);
+  return array($node->name);
 }
 
 function _parsely_get_pub_date_utc($node) {
-    $pub_date = NULL;
-    // Prefer published_at which is added by the publication_date module
-    // https://www.drupal.org/project/publication_date
-    if (property_exists($node, 'published_at') && is_numeric($node->published_at))
-        $pub_date = $node->published_at;
-    // Otherwise, fall back to just Drupal's created date
-    else
-        $pub_date = $node->created;
+  $pub_date = NULL;
+  // Prefer published_at which is added by the publication_date module
+  // https://www.drupal.org/project/publication_date
+  if (property_exists($node, 'published_at') && is_numeric($node->published_at))
+    $pub_date = $node->published_at;
+  // Otherwise, fall back to just Drupal's created date
+  else
+    $pub_date = $node->created;
 
-    return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
+  return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
 }
 
 /**
@@ -190,75 +190,75 @@ function _parsely_get_pub_date_utc($node) {
  * for sections.
  */
 function _parsely_get_section($node) {
-    $section_vocabulary = variable_get('parsely_section_vocabulary');
-    if (!module_exists('taxonomy') || $section_vocabulary === NULL)
-        return 'Uncategorized';
+  $section_vocabulary = variable_get('parsely_section_vocabulary');
+  if (!module_exists('taxonomy') || $section_vocabulary === NULL)
+    return 'Uncategorized';
 
-    $active_terms_query = db_select('taxonomy_index', 't')
-        ->fields('t')
-        ->condition('nid', $node->nid, '=')
-        ->execute();
+  $active_terms_query = db_select('taxonomy_index', 't')
+    ->fields('t')
+    ->condition('nid', $node->nid, '=')
+    ->execute();
 
-    $row = $active_terms_query->fetchAssoc();
-    if (isset($row['tid'])) {
-        $term = taxonomy_term_load($row['tid']);
-        return $term->name;
-    } else {
-        return 'Uncategorized';
-    }
+  $row = $active_terms_query->fetchAssoc();
+  if (isset($row['tid'])) {
+    $term = taxonomy_term_load($row['tid']);
+    return $term->name;
+  } else {
+    return 'Uncategorized';
+  }
 }
 
 function _parsely_get_tags($node) {
-    $supported_vocabularies = variable_get('parsely_tag_vocabularies');
-    if (!module_exists('taxonomy') || $supported_vocabularies === NULL)
-        return array();
+  $supported_vocabularies = variable_get('parsely_tag_vocabularies');
+  if (!module_exists('taxonomy') || $supported_vocabularies === NULL)
+    return array();
 
-    // Get a mapping of all the terms in this vocabulary so that we can look up
-    // the name of the active terms by term id
-    $_terms = array();
-    foreach ($supported_vocabularies as $vid) {
-        $_terms = array_merge($_terms, taxonomy_get_tree($vid));
-    }
-    $terms = array();
-    foreach ($_terms as $term) {
-        $terms[$term->tid] = $term->name;
-    }
+  // Get a mapping of all the terms in this vocabulary so that we can look up
+  // the name of the active terms by term id
+  $_terms = array();
+  foreach ($supported_vocabularies as $vid) {
+    $_terms = array_merge($_terms, taxonomy_get_tree($vid));
+  }
+  $terms = array();
+  foreach ($_terms as $term) {
+    $terms[$term->tid] = $term->name;
+  }
 
-    // Check what vocabulary terms are on the page that is loading
-    $active_terms_query = db_select('taxonomy_index', 't')
-        ->fields('t')
-        ->condition('nid', $node->nid, '=')
-        ->execute();
+  // Check what vocabulary terms are on the page that is loading
+  $active_terms_query = db_select('taxonomy_index', 't')
+    ->fields('t')
+    ->condition('nid', $node->nid, '=')
+    ->execute();
 
-    // Build up and return active_terms
-    $active_terms = array();
-    while ($row = $active_terms_query->fetchAssoc()) {
-        if (isset($row['tid']))
-            array_push($active_terms, $terms[$row['tid']]);
-    }
+  // Build up and return active_terms
+  $active_terms = array();
+  while ($row = $active_terms_query->fetchAssoc()) {
+    if (isset($row['tid']))
+      array_push($active_terms, $terms[$row['tid']]);
+  }
 
-    return $active_terms;
+  return $active_terms;
 }
 
 function _parsely_get_node_metadata() {
-    $node = menu_get_object();
+  $node = menu_get_object();
 
-    $parsely_meta = array(
-        '@context' => 'http://schema.org',
-        '@type' => 'WebPage',
-        'articleId' => _parsely_get_content_id($node),
-        'headline' => $node->title,
-        'url' => _parsely_get_canonical_url($node),
-        'thumbnailUrl' => 'FIX ME',
-        'dateCreated' => _parsely_get_pub_date_utc($node),
-        'articleSection' => _parsely_get_section($node),
-        'creator' => _parsely_get_authors($node),
-        'keywords' => _parsely_get_tags($node),
-    );
+  $parsely_meta = array(
+    '@context' => 'http://schema.org',
+    '@type' => 'WebPage',
+    'articleId' => _parsely_get_content_id($node),
+    'headline' => $node->title,
+    'url' => _parsely_get_canonical_url($node),
+    'thumbnailUrl' => 'FIX ME',
+    'dateCreated' => _parsely_get_pub_date_utc($node),
+    'articleSection' => _parsely_get_section($node),
+    'creator' => _parsely_get_authors($node),
+    'keywords' => _parsely_get_tags($node),
+  );
 
-    if ($node->type === 'article') {
-        $parsely_meta['@type'] = 'NewsArticle';
-    }
+  if ($node->type === 'article') {
+    $parsely_meta['@type'] = 'NewsArticle';
+  }
 
-    return $parsely_meta;
+  return $parsely_meta;
 }
