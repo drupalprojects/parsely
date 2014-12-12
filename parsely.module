@@ -27,7 +27,7 @@ function parsely_init() {
 function parsely_menu() {
     $items['admin/config/system/parsely'] = array(
         'title' => 'Parse.ly',
-        'description' => 'Parse.ly configuration settings',
+        'description' => 'Parse.ly configuration settings.',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('parsely_admin_settings'),
         'access arguments' => array('administer parsely settings'),
