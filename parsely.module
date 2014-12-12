@@ -36,13 +36,13 @@ function parsely_init() {
  */
 function parsely_menu() {
   $items['admin/config/system/parsely'] = array(
-    'title'             => 'Parse.ly',
-    'description'       => 'Parse.ly configuration settings.',
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('parsely_admin_settings'),
-    'access arguments'  => array('administer parsely settings'),
-    'type'              => MENU_NORMAL_ITEM,
-    'file'              => 'parsely.admin.inc',
+    'title'            => 'Parse.ly',
+    'description'      => 'Parse.ly configuration settings.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('parsely_admin_settings'),
+    'access arguments' => array('administer parsely settings'),
+    'type'             => MENU_NORMAL_ITEM,
+    'file'             => 'parsely.admin.inc',
   );
   $items['admin/config/system/parsely/settings'] = array(
     'title' => 'Settings',
@@ -246,16 +246,16 @@ function _parsely_get_node_metadata() {
   $node = menu_get_object();
 
   $parsely_meta = array(
-    '@context'        => 'http://schema.org',
-    '@type'           => 'WebPage',
-    'articleId'       => _parsely_get_content_id($node),
-    'headline'        => $node->title,
-    'url'             => _parsely_get_canonical_url($node),
-    'thumbnailUrl'    => 'FIX ME',
-    'dateCreated'     => _parsely_get_pub_date_utc($node),
-    'articleSection'  => _parsely_get_section($node),
-    'creator'         => _parsely_get_authors($node),
-    'keywords'        => _parsely_get_tags($node),
+    '@context'       => 'http://schema.org',
+    '@type'          => 'WebPage',
+    'articleId'      => _parsely_get_content_id($node),
+    'headline'       => $node->title,
+    'url'            => _parsely_get_canonical_url($node),
+    'thumbnailUrl'   => 'FIX ME',
+    'dateCreated'    => _parsely_get_pub_date_utc($node),
+    'articleSection' => _parsely_get_section($node),
+    'creator'        => _parsely_get_authors($node),
+    'keywords'       => _parsely_get_tags($node),
   );
 
   if ($node->type === 'article') {
