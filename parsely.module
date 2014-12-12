@@ -137,7 +137,8 @@ function _parsely_get_content_id($node) {
 }
 
 function _parsely_get_canonical_url($node) {
-    return url('node/'.$node->nid, array('absolute', TRUE));
+    $uri = entity_uri('node', $node);
+    return url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE)));
 }
 
 function _parsely_get_authors($node) {
