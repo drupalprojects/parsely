@@ -11,7 +11,7 @@
 function parsely_init() {
     $apikey = variable_get('parsely_apikey', '');
 
-    if (parsely_should_track()) {
+    if (parsely_should_add_metas()) {
         $parsely_meta = _parsely_get_node_metadata();
         drupal_add_html_head(array(
             '#tag' => 'script',
@@ -52,9 +52,35 @@ function parsely_permission() {
   );
 }
 
-function parsely_should_track() {
+/**
+ * Determines whether or not to place the parsely meta tag on a page. This is
+ * separate from should_track because we don't need to consider whether users
+ * are authenticated here.
+ */
+function parsely_should_add_metas() {
     $node = menu_get_object();
     if ($node === NULL) {
+        return FALSE;
+    }
+
+    if (empty(variable_get('parsely_apikey', ''))) {
+        return FALSE;
+    }
+
+
+    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+    if (drupal_match_path($path, implode("\r", parsely_paths_to_ignore()))) {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+/**
+ * Determines whether or not to place the Parsely JavaScript on a page.
+ */
+function parsely_should_track() {
+    if (!parsely_should_add_metas()) {
         return FALSE;
     }
 
@@ -64,16 +90,7 @@ function parsely_should_track() {
         return FALSE;
     }
 
-    if (!empty(variable_get('parsely_apikey', ''))) {
-        $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
-        if (drupal_match_path($path, implode("\r", parsely_paths_to_ignore()))) {
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    return FALSE;
+    return TRUE;
 }
 
 /**
