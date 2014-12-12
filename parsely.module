@@ -158,6 +158,10 @@ function _parsely_get_pub_date_utc($node) {
     return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
 }
 
+/**
+ * Section is the first active term from the vocabulary we've been told to use
+ * for sections.
+ */
 function _parsely_get_section($node) {
     $section_vocabulary = variable_get('parsely_section_vocabulary');
     if (!module_exists('taxonomy') || $section_vocabulary === NULL)
