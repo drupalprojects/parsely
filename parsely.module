@@ -5,7 +5,7 @@
  *
  */
 
-define('__PARSELY_VERSION__', '0.1');
+define('_PARSELY_VERSION', '0.1');
 
 /**
  * Implements hook_init().
@@ -25,7 +25,7 @@ function parsely_init() {
       '#attributes' => array(
         'name' => 'drupal_parsely_version',
         'id' => 'drupal_parsely_version',
-        'content' => __PARSELY_VERSION__
+        'content' => _PARSELY_VERSION
       )
     ), 'parsely_version');
   }
