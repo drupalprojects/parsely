@@ -5,6 +5,8 @@
  *
  */
 
+define('__PARSELY_VERSION__', '0.1');
+
 /**
  * Implements hook_init().
  */
@@ -17,7 +19,15 @@ function parsely_init() {
             '#tag' => 'script',
             '#attributes' => array('type' => 'application/ld+json'),
             '#value' => json_encode($parsely_meta),
-        ), 'parsely');
+        ), 'parsely_metadata');
+        drupal_add_html_head(array(
+            '#tag' => 'meta',
+            '#attributes' => array(
+                'name' => 'drupal_parsely_version',
+                'id' => 'drupal_parsely_version',
+                'content' => __PARSELY_VERSION__
+            )
+        ), 'parsely_version');
     }
 }
 
