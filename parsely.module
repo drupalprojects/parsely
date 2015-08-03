@@ -14,7 +14,7 @@ function _parsely_get_settings($vars=NULL) {
   $parsely_settings = &drupal_static(__FUNCTION__);
   
   if (!isset($parsely_settings)) {
-    $parsely_settings = new parselySettings($vars); 
+    $parsely_settings = new ParselySettings($vars); 
   }
 
   return $parsely_settings;
