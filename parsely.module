@@ -7,7 +7,9 @@
 define('_PARSELY_VERSION', '0.1');
 
 include_once 'Parsely.php';
-include_once 'ParselySettings.php';
+
+// This fixes a but with Drupal.org file handling. 
+include_once 'ParselySettings.inc';
 
 function _parsely_get_settings($vars=NULL) {
   $vars = array();
