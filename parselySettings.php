@@ -4,7 +4,7 @@
  * Parse.ly Settings Class.
  */
 
-class parselySettings {
+class ParselySettings {
 
   private   $apiKey;
   private   $debug;
