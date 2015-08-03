@@ -13,3 +13,7 @@ Use drush to install or download the module files from drupal.org or github (and
 directory.) 
 
 Then head to `Configuration > Search and metadata > Parse.ly` to configure the module.
+
+There is no default tagging vocabulary. You will have to enable it from the settings page. 
+
+
