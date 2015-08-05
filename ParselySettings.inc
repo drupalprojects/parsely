@@ -9,6 +9,7 @@ class ParselySettings {
   private   $apiKey;
   private   $debug;
   private   $ignorePaths;
+  private   $imageField;
   private   $nodeTypes;
   private   $sections;
   private   $taxonomies;
@@ -23,6 +24,7 @@ class ParselySettings {
     $this->ignorePaths = $this->setPathsToIgnore();
     $this->nodeTypes = $this->setNodeTypes();
     $this->trackAuth = $this->setTrackAuth();
+    $this->imageField = $this->setImageField();
     
   }
     
@@ -39,6 +41,13 @@ class ParselySettings {
     return variable_get('parsely_debug');
 
   }
+
+  protected function setImageField() {    
+
+    return 'field_image';
+
+  }
+
 
   protected function setNodeTypes() {    
 
@@ -87,6 +96,13 @@ class ParselySettings {
     return $this->debug;
     
   }
+
+  public function getImageField() {    
+
+    return $this->imageField;
+    
+  }
+
 
   public function getNodeTypes() {    
 

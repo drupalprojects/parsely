@@ -7,8 +7,6 @@
 define('_PARSELY_VERSION', '0.1');
 
 include_once 'Parsely.php';
-
-// This fixes a but with Drupal.org file handling. 
 include_once 'ParselySettings.inc';
 
 function _parsely_get_settings($vars=NULL) {
@@ -59,7 +57,7 @@ function parsely_permission() {
  */
 function parsely_init() { 
   $vars = array();
-  $parsely_settings= _parsely_get_settings();
+  $parsely_settings= _parsely_get_settings($vars);
   $apikey = $parsely_settings->getApiKey();
   if (parsely_should_add_metas()) { 
     $parsely_meta = _parsely_get_node_metadata();
@@ -146,7 +144,7 @@ function parsely_should_track() {
 }
 
 function _parsely_user_is_authenticated() {
-  // Anonymous users have a uid of 0; anyone else is authenticated
+  // Anonymous users have a uid of 0; anyone else > 0 is authenticated
   global $user;
   return $user->uid !== 0;
 }
@@ -162,7 +160,6 @@ function parsely_track_node($node, $parsely_settings) {
   if (isset($track_node)) { 
     return $track_node; 
   } else {
-// @TODO indentation  
     $node_types = node_type_get_types();
     $node_tracking = $parsely_settings->getNodeTypes();
     
@@ -191,7 +188,7 @@ function parsely_track_node($node, $parsely_settings) {
 function parsely_page_build(&$page) {
   $parsely_settings= _parsely_get_settings();
 
-  if (!parsely_should_track()) {
+ if (!parsely_should_track() && !drupal_is_front_page()) {
     return;
   }
 
@@ -246,7 +243,7 @@ function _parsely_get_node_metadata() {
   // Is the default image overridden?  
   $uri = $thumbUrlSetting = $parsely_settings->getThumbnailUrl();
   if(empty($thumbUrlSetting)){
-    $thumbUrlSetting = 'field_image';
+    $thumbUrlSetting = $parsely_settings->getImageField();
   }
   
   // Get thummbnailURL. If individual image is not set, use site logo.
@@ -273,3 +270,4 @@ function _parsely_get_node_metadata() {
 
   return $parsely_meta;
 }
+
