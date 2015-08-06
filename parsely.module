@@ -256,8 +256,9 @@ function _parsely_get_node_metadata() {
     $parsely_meta['thumbnailUrl'] = theme_get_setting('logo');
   }
   
-  // Fetch the node type.  
-  $parsely_meta['@type'] = parsely_track_node($node, $parsely_settings);
+  // Fetch the node type. NB. We don't use the bundle name, but a valid schema.org type.
+  // $parsely_meta['@type'] = parsely_track_node($node, $parsely_settings);
+  $parsely_meta['@type'] = 'NewsArticle';
   
   // Allow modules to alter the default metadata for this node. 
   drupal_alter('parsely_node_metadata', $parsely_meta, $node);
