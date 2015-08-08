@@ -78,7 +78,7 @@ function parsely_get_section($node) {
     }
   }
 
-  if (property_exists($section_term, 'name')) {
+  if ($section_term && property_exists($section_term, 'name')) {
     $section_name = $section_term->name;
   }
 

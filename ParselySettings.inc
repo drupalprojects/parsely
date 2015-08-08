@@ -8,6 +8,7 @@ class ParselySettings {
 
   private   $apiKey;
   private   $debug;
+  private   $debugMsg;
   private   $ignorePaths;
   private   $imageField;
   private   $nodeTypes;
@@ -15,7 +16,7 @@ class ParselySettings {
   private   $taxonomies;
   private   $thumbnailURL;
   private   $trackAuth;
-  
+
   public function __construct($vars) {
 
     $this->apiKey = $this->setApiKey($vars);
@@ -42,6 +43,16 @@ class ParselySettings {
 
   }
 
+  protected function setDebugMsg($msg, $loglink) {    
+
+    $this->debugMsg = array(
+      $msg => $loglink,
+    );
+    
+    // no return.
+    
+  }
+
   protected function setImageField() {    
 
     return 'field_image';
@@ -51,7 +62,17 @@ class ParselySettings {
 
   protected function setNodeTypes() {    
 
-    $parsley_nodes = variable_get('parsely_nodes');
+    $parsley_nodes = variable_get('parsely_nodes'); 
+    
+    if (!isset($parsley_nodes)) { 
+      if (user_access('')) {
+        $loglink = l("Configure Parse.ly Settings", 'admin/config/search/parsely');
+        WATCHDOG('Parse.ly', "No tracked node types found. Please configure: $loglink");
+        $this->setDebugMsg('Have you selected which node types to track?', $loglink); 
+      } 
+      return;
+    } else {       }
+    
     $tracked_node_types = array();  
 
     foreach ($parsley_nodes as $bid => $track) {
@@ -72,7 +93,7 @@ class ParselySettings {
 
   protected function setThumbnailUrl() {    
 
-    return variable_get('parsely_metadata_thumbnail_url');
+    return variable_get('parsely_metadata_thumbnail_url', '');
 
   }
   
@@ -97,6 +118,12 @@ class ParselySettings {
     
   }
 
+  public function getDebugMsg() {    
+
+    return $this->debugMsg;
+    
+  }
+
   public function getImageField() {    
 
     return $this->imageField;
@@ -116,7 +143,7 @@ class ParselySettings {
     
   }
   
-  public function getThumbnailUrl($node) {
+  public function getThumbnailUrl() {
 
      return $this->thumbnailUrl;
      

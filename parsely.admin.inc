@@ -18,16 +18,7 @@ function parsely_admin_settings($form, &$form_state) {
     '#default_value' => variable_get('parsely_apikey'),
   );
   
-$parsely_ignore_format = 'text_filter';
-$form['parsely_ignore'] = array(
-    '#type' => 'textarea',
-    '#rows' => 5,
-    '#resizable' => TRUE,
-    '#title' => t('Paths to ignore'),
-    '#description' => t('List each path to ignore on its own line'),
-    '#default_value' => variable_get('parsely_ignore', array('admin','admin/*')),
-    '#format' => $parsely_ignore_format,
-  );
+
 
   $node_get_types = array_keys(node_type_get_types());
   foreach ($node_get_types as $key => $bid){ 
@@ -46,7 +37,7 @@ $form['parsely_ignore'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Available node types:'),    
     '#options' => $node_types,
-    '#default_value' => variable_get('parsely_nodes', ''),
+    '#default_value' => variable_get('parsely_nodes', array()),
     );
 
   if (module_exists('taxonomy')) {
@@ -56,6 +47,15 @@ $form['parsely_ignore'] = array(
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
+    
+    $form['parsely_tag_vocabularies'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Tag Vocabularies'),
+      '#options' => _parsely_vocab_array_format(taxonomy_get_vocabularies()),
+      '#description' => t('<em>Select which taxonomy vocabularies will be tracked as tags.</em>'),
+      '#default_value' => variable_get('parsely_tag_vocabularies', array()),
+    );
+    
     $form['parsely_sections_wrapper']['parsely_section_vocabulary'] = array(
       '#type' => 'radios',
       '#title' => t('Section Vocabulary'),
@@ -80,24 +80,30 @@ $form['parsely_ignore'] = array(
       '#description' => t('If a given node may be associated with multiple terms from the vocabulary you selected above, this setting can help determine which term to use. "First term" and "Last term" will choose a term based on the date/time the term was created (this may differ from the relative position of a term within a term reference field). "Highest term" will choose the term that lives closest to the root of the vocabulary (defaulting to the "first"/oldest of such terms if more than one exist). For hierarchical vocabularies, you can also opt to use the "Highest-level ancestor" of a given term, which means that if a given node is tagged with a lower-lever term (e.g. corresponding to a subsection of your site), we will report that term\'s parent (or grandparent, etc.) term as the section. Wherever a choice must be made between terms at the same depth, the first term will be chosen.'),
       '#default_value' => variable_get('parsely_section_term_criterion', 'first'),
     );
-
-    $form['parsely_tag_vocabularies'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Tag Vocabularies'),
-      '#options' => _parsely_vocab_array_format(taxonomy_get_vocabularies()),
-      '#description' => t('<em>Select which taxonomy vocabularies will be tracked as tags.</em>'),
-      '#default_value' => variable_get('parsely_tag_vocabularies', array()),
-    );
-  }
   // TODO: Should display warning if taxonomy module isn't available
+  }
 
-  // Optional settings
+  $parsely_ignore_format = 'text_filter';
+  $form['parsely_ignore'] = array(
+    '#type' => 'textarea',
+    '#rows' => 5,
+    '#resizable' => TRUE,
+    '#title' => t('Paths to ignore'),
+    '#description' => t('List each path to ignore on its own line'),
+    '#default_value' => variable_get('parsely_ignore', array('admin','admin/*')),
+    '#format' => $parsely_ignore_format,
+  );
+
+
+  // Metadata settings
   $form['parsely_metadata'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Metadata Settings'),
-    '#description' => t('Customize the values reported to Parse.ly for each page. Read more about Parse.ly metadata !here.', array('!here' => l('here', 'http://www.parsely.com/docs/integration/metadata/ppage.html'))),
+    '#title' => t('Metadata'),
+    // '#description' => t('Customize the values reported to Parse.ly for each page. Read more about Parse.ly metadata !here.', array('!here' => l('here', 'http://www.parsely.com/docs/integration/metadata/ppage.html'))),
+
+    '#description' => t('Read more about Parse.ly metadata !here.', array('!here' => l('here', 'http://www.parsely.com/docs/integration/metadata/ppage.html'))),
     '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
+    '#collapsed' => TRUE,
   );
   // Thumbnail image.
   $logo_url = ltrim(theme_get_setting('logo', variable_get('theme_default')), '/');
@@ -140,10 +146,10 @@ $form['parsely_ignore'] = array(
     }
   }
 
-  // Optional settings
+  // Advanced settings
   $form['parsely_optional_settings'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Optional Settings'),
+    '#title' => t('Advanced Settings'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -167,13 +173,24 @@ $form['parsely_ignore'] = array(
     '#default_value' => variable_get('parsely_metadata_thumbnail_url', 'field_image'),
     '#maxlength' => 1024,
   );
-    $form['parsely_optional_settings']['parsely_debug'] = array(
+    $form['parsely_optional_settings']['parsely_authors'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Multiple Authors Support'),
+    '#description' => t('If your site supports multiple authors per node, enter the author field machine_name here.'),
+    '#default_value' => variable_get('parsely_authors', ''),
+  );
+    $form['parsely_debug_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Debug'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+    $form['parsely_debug_settings']['parsely_debug'] = array(
     '#type' => 'checkbox',
     '#title' => t('Debugging on?'),
     '#description' => t('Toggle this on to dump your Parsley data on every tracked page. <em>NB. You must have the Administer Parsely permission to view this data.</em>'),
     '#default_value' => variable_get('parsely_debug', ''),
   );
-  
 
   return system_settings_form($form);
 }
