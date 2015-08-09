@@ -14,6 +14,6 @@ directory.)
 
 Then head to `Configuration > Search and metadata > Parse.ly` to configure the module.
 
-There is no default tagging vocabulary. You will have to enable it from the settings page. 
+There is no default tagging vocabulary. You will have to enable it from the settings page. You may use the 'Tags' vocubulary, which comes out of the box with Drupal, however you will need to add at least one term to the vocabulary to use it.  
 
 
