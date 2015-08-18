@@ -2,5 +2,5 @@ name = Parse.ly
 package = Statistics
 description = Adds Parse.ly to your Drupal site
 core = 7.x
-version = 0.1
+version = 1.x-dev
 configure = admin/config/system/parsely
