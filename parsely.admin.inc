@@ -165,7 +165,7 @@ function parsely_admin_settings($form, &$form_state) {
     '#type' => 'fieldset',
     '#title' => t('Advanced Settings'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
+    '#collapsed' => FALSE,
   );
     $form['parsely_optional_settings']['parsely_track_auth_users'] = array(
     '#type' => 'radios',
@@ -187,11 +187,25 @@ function parsely_admin_settings($form, &$form_state) {
     '#default_value' => variable_get('parsely_metadata_thumbnail_url', 'field_image'),
     '#maxlength' => 1024,
   );
-    $form['parsely_optional_settings']['parsely_authors'] = array(
+  $form['parsely_optional_settings']['parsely_authors'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Multiple Authors Support'),
+    '#description' => t('Setting for sites not using the standard configuration for content authoring.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+    $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field'] = array(
     '#type' => 'textfield',
     '#title' => t('Multiple Authors Support'),
     '#description' => t('If your site supports multiple authors per node, enter the author field machine_name here.'),
-    '#default_value' => variable_get('parsely_authors', ''),
+    '#default_value' => variable_get('parsely_authors_field', ''),
+  );
+    $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field_type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Multiple Authors Field Type'),
+    '#description' => t('Indicate whether your custom author field is uses a reference.'),
+    '#options' => array('N/A', 'field', 'node reference'),
+    '#default_value' => variable_get('parsely_authors_field_type', ''),
   );
     $form['parsely_debug_settings'] = array(
     '#type' => 'fieldset',
