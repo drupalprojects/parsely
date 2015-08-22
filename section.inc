@@ -1,14 +1,33 @@
 <?php 
-  
-  /**
+
+/**
  * Attempt to determine the "section" to which a given node belongs.
  */
 function parsely_get_section($node) {
   $section_name = 'Uncategorized';
   $section_term = NULL;
-  $section_vocabulary_id = variable_get('parsely_section_vocabulary');
+  $section_logic = variable_get('parsely_section_logic');
 
-  if (module_exists('taxonomy') && !is_null($section_vocabulary_id)) {
+  switch($section_logic) { 
+  
+    case 0: 
+      //$section_id = variable_get('parsely_section_by_node');
+      $section_by_node_type = variable_get('parsely_nodes'); 
+      if (module_exists('node') && !is_null($section_by_node_type)) {
+    
+        $node = menu_get_object(); 
+        if (in_array($node->type, $section_by_node_type)) {
+          $section_name = $node->type; 
+        }
+      } 
+    break; 
+      
+    case 1: 
+      //$section_id = variable_get('parsely_section_vocabulary');
+      $section_vocabulary_id = variable_get('parsely_section_vocabulary');
+      
+    /* @FIXME: code indentation */          
+    if (module_exists('taxonomy') && !is_null($section_vocabulary_id)) {
     // Find the most relevant term from the designated vocab, using the
     // criterion specified in the module configuration. See
     // parsely_admin_settings() for an explanation of the supported criteria.
@@ -80,6 +99,9 @@ function parsely_get_section($node) {
 
   if ($section_term && property_exists($section_term, 'name')) {
     $section_name = $section_term->name;
+  }
+  break;
+  
   }
 
   // Allow any module to alter the section name.

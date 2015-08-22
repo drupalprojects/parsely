@@ -25,25 +25,38 @@ function parsely_admin_settings($form, &$form_state) {
     $node_types[$bid] = $bid;
   }
 
-  $form['parsely_nodes_wrap'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Node types to track'),
-    '#description' => t('<em>Select which node types to track.</em>'),
+  $form['parsely_section_logic'] = array(
+    '#type' => 'radios',
+    '#title' => t('Use content (node) types or vocabulary (taxonomy) as sections?'),    
+    '#options' => array('node', 'taxonomy'),
+    '#default_value' => variable_get('parsely_section_logic'),
+    );
+
+
+  if (module_exists('node')) {
+
+    $form['parsely_nodes_wrap'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Node types to track'),
+      '#description' => t('<em>Select which node types to track. (Note: If you selected use node types above, these will be your available sections.)</em>'),
     //'#collapsible' => TRUE,
     //'#collapsed' => FALSE,
   );
-
-  $form['parsely_nodes_wrap']['parsely_nodes'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Available node types:'),    
-    '#options' => $node_types,
-    '#default_value' => variable_get('parsely_nodes', array()),
-    );
+    
+    $form['parsely_nodes_wrap']['parsely_nodes'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Available node types:'),    
+      '#options' => $node_types,
+      '#default_value' => variable_get('parsely_nodes', array()),
+    ); 
+  
+  }
 
   if (module_exists('taxonomy')) {
-    $form['parsely_sections_wrapper'] = array(
+        
+    $form['parsely_sections_tax_wrapper'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Section Settings'),
+      '#title' => t('Use Taxonomy Term as Section Settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
@@ -56,14 +69,14 @@ function parsely_admin_settings($form, &$form_state) {
       '#default_value' => variable_get('parsely_tag_vocabularies', array()),
     );
     
-    $form['parsely_sections_wrapper']['parsely_section_vocabulary'] = array(
+    $form['parsely_sections_tax_wrapper']['parsely_section_vocabulary'] = array(
       '#type' => 'radios',
       '#title' => t('Section Vocabulary'),
       '#options' => _parsely_vocab_array_format(taxonomy_get_vocabularies()),
       '#description' => t('Select the taxonomy vocabulary to use for Parse.ly sections. A single term from this vocabulary will be chosen for each tracked node, where applicable, using the criterion specified below.'),
       '#default_value' => variable_get('parsely_section_vocabulary', ''),
     );
-    $form['parsely_sections_wrapper']['parsely_section_term_criterion'] = array(
+    $form['parsely_sections_tax_wrapper']['parsely_section_term_criterion'] = array(
       '#title' => t('Section Term Selection Criteria'),
       '#type' => 'radios',
       '#options' => array(
@@ -80,7 +93,8 @@ function parsely_admin_settings($form, &$form_state) {
       '#description' => t('If a given node may be associated with multiple terms from the vocabulary you selected above, this setting can help determine which term to use. "First term" and "Last term" will choose a term based on the date/time the term was created (this may differ from the relative position of a term within a term reference field). "Highest term" will choose the term that lives closest to the root of the vocabulary (defaulting to the "first"/oldest of such terms if more than one exist). For hierarchical vocabularies, you can also opt to use the "Highest-level ancestor" of a given term, which means that if a given node is tagged with a lower-lever term (e.g. corresponding to a subsection of your site), we will report that term\'s parent (or grandparent, etc.) term as the section. Wherever a choice must be made between terms at the same depth, the first term will be chosen.'),
       '#default_value' => variable_get('parsely_section_term_criterion', 'first'),
     );
-  // TODO: Should display warning if taxonomy module isn't available
+    
+   
   }
 
   $parsely_ignore_format = 'text_filter';
@@ -151,7 +165,7 @@ function parsely_admin_settings($form, &$form_state) {
     '#type' => 'fieldset',
     '#title' => t('Advanced Settings'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
+    '#collapsed' => FALSE,
   );
     $form['parsely_optional_settings']['parsely_track_auth_users'] = array(
     '#type' => 'radios',
@@ -173,11 +187,25 @@ function parsely_admin_settings($form, &$form_state) {
     '#default_value' => variable_get('parsely_metadata_thumbnail_url', 'field_image'),
     '#maxlength' => 1024,
   );
-    $form['parsely_optional_settings']['parsely_authors'] = array(
+  $form['parsely_optional_settings']['parsely_authors'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Multiple Authors Support'),
+    '#description' => t('Setting for sites not using the standard configuration for content authoring.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+    $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field'] = array(
     '#type' => 'textfield',
     '#title' => t('Multiple Authors Support'),
     '#description' => t('If your site supports multiple authors per node, enter the author field machine_name here.'),
-    '#default_value' => variable_get('parsely_authors', ''),
+    '#default_value' => variable_get('parsely_authors_field', ''),
+  );
+    $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field_type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Multiple Authors Field Type'),
+    '#description' => t('Indicate whether your custom author field is uses a reference.'),
+    '#options' => array('N/A', 'field', 'node reference'),
+    '#default_value' => variable_get('parsely_authors_field_type', ''),
   );
     $form['parsely_debug_settings'] = array(
     '#type' => 'fieldset',

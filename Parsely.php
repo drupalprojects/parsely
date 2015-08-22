@@ -26,7 +26,6 @@ class Parsley {
     $this->keywords = $this->setTags($node);
     $this->articleSection = $this->setSection($node);
     
-    
   }
     
 /* ~~~ Setters (protected) ~~~ */     
@@ -42,12 +41,38 @@ class Parsley {
     
   } 
     
+  // @TODO: profile this function.   
   protected function setCreator($node) {
+    if (!isset($author_field)) { 
+      
+      if(variable_get('parsely_authors_field_type')==0) {
 
-    return format_username($node);
-    
-  } 
-   
+        return format_username($node);
+      
+      } elseif (variable_get('parsely_authors_field_type')==1) { 
+          $node = menu_get_object();
+          $author_field = (variable_get('parsely_authors_field'));      
+          $author = (array)$node->$author_field;
+          $author_node = (array)($node->$author_field);
+          $author = $author_node[LANGUAGE_NONE][0]['value'];
+
+          return $author;
+      
+      } elseif (variable_get('parsely_authors_field_type')==2) {
+          $node = menu_get_object();
+          $author_field = (variable_get('parsely_authors_field'));      
+          $author_node = (array)($node->$author_field);
+          $author = node_load($author_node[LANGUAGE_NONE][0]['nid']);
+
+          return $author->title;
+
+      } else {
+
+        return format_username($node);
+      }  
+    }
+  }
+      
   protected function setDate($node) {
    
     $pub_date = NULL;
@@ -95,7 +120,6 @@ class Parsley {
   public function getCreator() {    
     
     return $this->creator;
-    die($this->creator);
     
   }
 
