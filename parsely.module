@@ -72,8 +72,9 @@ function parsely_page_attachments(array &$attachments)
             '@type' => 'NewsArticle',
             'author' => $parsely_metadata->getCreator(),
             'url' => $parsely_metadata->getURL($node),
-
-
+            'section' => $parsely_metadata->getSection(),
+            'keywords' => $parsely_metadata->getTags(),
+            'datePublished' => $parsely_metadata->getDate(),
         ];
         $parsely_tag = [
             '#tag' => 'script',
