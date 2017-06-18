@@ -3,6 +3,7 @@ namespace Drupal\parsely;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Vocabulary;
 
 class ParselyMetadata {
 
@@ -85,6 +86,7 @@ class ParselyMetadata {
         }
     }
 
+
     /**
      * @param $node Node
      * @return false|string
@@ -102,6 +104,11 @@ class ParselyMetadata {
         return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
     }
 
+
+    /**
+     * @param $node Node
+     * @return array
+     */
     protected function setTags($node) {
 
 
@@ -110,8 +117,8 @@ class ParselyMetadata {
             return array();
         }
         foreach($vocabularies as $vocab) {
-            $entity = \Drupal::entityTypeManager()->getStorage('vocabulary')->load($vocab);
-            array_push($tags, $entity);
+            $entity = Vocabulary::load($vocab);
+            array_push($tags, $entity->get('name'));
         }
         return $tags;
     }
