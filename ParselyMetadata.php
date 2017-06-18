@@ -4,6 +4,8 @@ use Drupal\Core\Language\Language;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\TermStorage;
+use Drupal\taxonomy\TermStorageInterface;
 
 class ParselyMetadata {
 
@@ -118,7 +120,10 @@ class ParselyMetadata {
         }
         foreach($vocabularies as $vocab) {
             $entity = Vocabulary::load($vocab);
-            array_push($tags, $entity->get('name'));
+            $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($entity->id());
+            foreach ($terms as $term) {
+                array_push($tags, $term->get('name'));
+            }
         }
         return $tags;
     }
