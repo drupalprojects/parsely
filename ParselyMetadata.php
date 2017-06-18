@@ -1,6 +1,7 @@
 <?php
 namespace Drupal\parsely;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
 
 class ParselyMetadata {
 
@@ -25,6 +26,13 @@ class ParselyMetadata {
     }
 
     /* ~~~ Setters (protected) ~~~ */
+
+
+
+    /**
+     * @param $node Node
+     * @return string
+     */
 
     protected function setID($node) {
 
