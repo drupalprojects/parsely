@@ -1,0 +1,34 @@
+parsely.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    parsely_section_term_criterion:
+      type: string
+    parsely_content_id_prefix:
+      type: string
+    parsely_section_vocabulary:
+      type: string
+    parsely_track_auth_users:
+      type: boolean
+    parsely_metadata_thumbnail_url:
+      type: string
+    parsely_authors_field:
+      type: string
+    parsely_authors_field_type:
+      type: integer
+    parsely_debug:
+      type: string
+    parsely_apikey:
+      type: string
+    parsely_nodes:
+      type: array
+    parsely_ignore:
+      type: string
+    parsely_track_auth_users:
+      type: string
+    parsely_section_by_node:
+      type: string
+    parsely_section_logic:
+      type: string
+    parsely_tag_vocabularies:
+      type: array

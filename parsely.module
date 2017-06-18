@@ -1,131 +1,44 @@
 <?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\parsely\ParselyMetadata;
+
+include('ParselyMetadata.php');
+include('section.inc');
 /**
- * @file
- * The main module file.
- *
+ * Implements hook_help().
  */
-
-define('_PARSELY_VERSION', '0.1');
-
-/**
- * Implements hook_init().
- */
-function parsely_init() {
-  $apikey = variable_get('parsely_apikey', '');
-
-  if (parsely_should_add_metas()) {
-    $parsely_meta = _parsely_get_node_metadata();
-    drupal_add_html_head(array(
-      '#tag' => 'script',
-      '#attributes' => array('type' => 'application/ld+json'),
-      '#value' => json_encode($parsely_meta),
-    ), 'parsely_metadata');
-    drupal_add_html_head(array(
-      '#tag' => 'meta',
-      '#attributes' => array(
-        'name' => 'drupal_parsely_version',
-        'id' => 'drupal_parsely_version',
-        'content' => _PARSELY_VERSION
-      )
-    ), 'parsely_version');
-  }
+function parsely_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+        case 'help.page.parsely':
+            return t('
+        <h2>Lorem ipsum generator for Drupal.</h2>
+        <h3>Instructions</h3>
+        <p>Lorem ipsum dolor sit amet... <strong>Just kidding!</strong></p>
+        <p>Unpack in the <em>modules</em> folder (currently in the root of your Drupal 8 installation) and enable in <strong>/admin/modules</strong>.</p>
+        <p>Then, visit <strong>/admin/config/development/loremipsum</strong> and enter your own set of phrases to build random-generated text (or go with the default Lorem ipsum).</p>
+        <p>Last, visit <strong>www.example.com/loremipsum/generate/P/S</strong> where:</p>
+        <ul>
+          <li><em>P</em> is the number of <em>paragraphs</em></li>
+          <li><em>S</em> is the maximum number of <em>sentences</em></li>
+        </ul>
+        <p>There is also a generator block in which you can choose how many paragraphs and
+phrases and it\'ll do the rest.</p>
+        <p>If you need, there\'s also a specific <em>generate lorem ipsum</em> permission.</p>
+        <h3>Attention</h3>
+        <p>Most bugs have been ironed out, holes covered, features added. But this module is a work in progress. Please report bugs and suggestions, ok?</p>
+      ');
+    }
 }
 
 /**
- * Implements hook_menu().
+ * Implements hook_page_bottom().
  */
-function parsely_menu() {
-  $items['admin/config/system/parsely'] = array(
-    'title'            => 'Parse.ly',
-    'description'      => 'Parse.ly configuration settings.',
-    'page callback'    => 'drupal_get_form',
-    'page arguments'   => array('parsely_admin_settings'),
-    'access arguments' => array('administer parsely settings'),
-    'type'             => MENU_NORMAL_ITEM,
-    'file'             => 'parsely.admin.inc',
-  );
-  $items['admin/config/system/parsely/settings'] = array(
-    'title' => 'Settings',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-  );
-  return $items;
-}
-
-/**
- * Implements hook_permission().
- */
-function parsely_permission() {
-  return array(
-  'administer parsely settings' => array(
-    'title' => t('Administer Parse.ly settings'),
-  ),
-  );
-}
-
-/**
- * Determines whether or not to place the parsely meta tag on a page. This is
- * separate from should_track because we don't need to consider whether users
- * are authenticated here.
- */
-function parsely_should_add_metas() {
-  $node = menu_get_object();
-  if ($node === NULL) {
-    return FALSE;
-  }
-
-  if (empty(variable_get('parsely_apikey', ''))) {
-    return FALSE;
-  }
-
-
-  $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
-  if (drupal_match_path($path, implode("\r", parsely_paths_to_ignore()))) {
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * Determines whether or not to place the Parsely JavaScript on a page.
- */
-function parsely_should_track() {
-  if (!parsely_should_add_metas()) {
-    return FALSE;
-  }
-
-  // Check whether or not we should track logged in users
-  $should_track_authenticated_users = variable_get('parsely_track_authenticated_users') === '0';
-  if ($should_track_authenticated_users && _parsely_user_is_authenticated()) {
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * Returns an array of paths not to track using Parse.ly's javascript/metadata
- * tags.
- */
-function parsely_paths_to_ignore() {
-  return array(
-    'admin*',
-    'node/add*',
-    'node/*/edit*',
-    'node/*/delete*',
-  );
-}
-
-/**
- * Implements hook_page_build to insert Parse.ly's JavaScript tracker.
- */
-function parsely_page_build(&$page) {
-  if (!parsely_should_track()) {
-    return;
-  }
-
-  $apikey = check_plain(variable_get('parsely_apikey'));
-  $markup = <<<EOT
+function parsely_page_bottom(array &$page_bottom)
+{
+    // TODO: if we're not supposed to track, get outta here
+    $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
+    $markup = <<<EOT
 
 <!-- START Parse.ly Include: Standard -->
 <div id="parsely-root" style="display: none">
@@ -144,123 +57,31 @@ function parsely_page_build(&$page) {
 </script>
 <!-- END Parse.ly Include: Standard -->
 EOT;
-  $page['page_bottom']['parsely'] = array('#markup' => $markup);
-}
-
-
-function _parsely_user_is_authenticated() {
-  // Anonymous users have a uid of 0, anyone else is authenticated
-  global $user;
-  return $user->uid !== 0;
-}
-
-/*** Parsely Metadata Functions **********************************************/
-function _parsely_get_content_id($node) {
-  $prefix = variable_get('parsely_content_id_prefix', '');
-  if (!empty($prefix))
-    $prefix = $prefix . '-';
-
-  return $prefix.$node->nid;
-}
-
-function _parsely_get_canonical_url($node) {
-  $uri = entity_uri('node', $node);
-  return url($uri['path'], array_merge($uri['options'], array('absolute' => TRUE)));
-}
-
-function _parsely_get_authors($node) {
-  return array($node->name);
-}
-
-function _parsely_get_pub_date_utc($node) {
-  $pub_date = NULL;
-  // Prefer published_at which is added by the publication_date module
-  // https://www.drupal.org/project/publication_date
-  if (property_exists($node, 'published_at') && is_numeric($node->published_at)) {
-    $pub_date = $node->published_at;
-  }
-  // Otherwise, fall back to just Drupal's created date
-  else {
-    $pub_date = $node->created;
-  }
-
-  return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
+    $page['page_bottom']['parsely'] = array('#markup' => $markup);
 }
 
 /**
- * Section is the first active term from the vocabulary we've been told to use
- * for sections.
+ * Implements hook_page_attachments().
  */
-function _parsely_get_section($node) {
-  $section_vocabulary = variable_get('parsely_section_vocabulary');
-  if (!module_exists('taxonomy') || $section_vocabulary === NULL)
-    return 'Uncategorized';
+function parsely_page_attachments(array &$attachments)
+{
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if ($node) {    $parsely_metadata = new ParselyMetadata($node);
+        $parsely_metas = [
+            '@context' => 'schema.org',
+            '@type' => 'NewsArticle',
+            'author' => $parsely_metadata->getCreator(),
+            'url' => $parsely_metadata->getURL($node),
 
-  $active_terms_query = db_select('taxonomy_index', 't')
-    ->fields('t')
-    ->condition('nid', $node->nid, '=')
-    ->execute();
 
-  $row = $active_terms_query->fetchAssoc();
-  if (isset($row['tid'])) {
-    $term = taxonomy_term_load($row['tid']);
-    return $term->name;
-  } else {
-    return 'Uncategorized';
-  }
+        ];
+        $parsely_tag = [
+            '#tag' => 'script',
+            '#attributes' => [
+                'type' => 'application/ld+json'
+            ],
+            '#value' => json_encode($parsely_metas)
+        ];}
+
 }
 
-function _parsely_get_tags($node) {
-  $supported_vocabularies = variable_get('parsely_tag_vocabularies');
-  if (!module_exists('taxonomy') || $supported_vocabularies === NULL)
-    return array();
-
-  // Get a mapping of all the terms in this vocabulary so that we can look up
-  // the name of the active terms by term id
-  $_terms = array();
-  foreach ($supported_vocabularies as $vid) {
-    $_terms = array_merge($_terms, taxonomy_get_tree($vid));
-  }
-  $terms = array();
-  foreach ($_terms as $term) {
-    $terms[$term->tid] = $term->name;
-  }
-
-  // Check what vocabulary terms are on the page that is loading
-  $active_terms_query = db_select('taxonomy_index', 't')
-    ->fields('t')
-    ->condition('nid', $node->nid, '=')
-    ->execute();
-
-  // Build up and return active_terms
-  $active_terms = array();
-  while ($row = $active_terms_query->fetchAssoc()) {
-    if (isset($row['tid']))
-      array_push($active_terms, $terms[$row['tid']]);
-  }
-
-  return $active_terms;
-}
-
-function _parsely_get_node_metadata() {
-  $node = menu_get_object();
-
-  $parsely_meta = array(
-    '@context'       => 'http://schema.org',
-    '@type'          => 'WebPage',
-    'articleId'      => _parsely_get_content_id($node),
-    'headline'       => $node->title,
-    'url'            => _parsely_get_canonical_url($node),
-    'thumbnailUrl'   => 'FIX ME',
-    'dateCreated'    => _parsely_get_pub_date_utc($node),
-    'articleSection' => _parsely_get_section($node),
-    'creator'        => _parsely_get_authors($node),
-    'keywords'       => _parsely_get_tags($node),
-  );
-
-  if ($node->type === 'article') {
-    $parsely_meta['@type'] = 'NewsArticle';
-  }
-
-  return $parsely_meta;
-}

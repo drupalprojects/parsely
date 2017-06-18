@@ -1,0 +1,6 @@
+name: Parse.ly
+type: module
+description: 'Adds parsely analytics to your Drupal instance'
+core: 8.x
+configure: parsely.admin_settings
+package: Search & Metadata
