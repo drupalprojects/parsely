@@ -1,5 +1,6 @@
 <?php
 namespace Drupal\parsely;
+use Drupal\Core\Language\Language;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 
@@ -46,35 +47,40 @@ class ParselyMetadata {
 
     }
 
+
+
     // @TODO: profile this function.
+
+    /**
+     * @param $node Node
+     * @return string
+     */
+
     protected function setCreator($node) {
         if (!isset($author_field)) {
             if(\Drupal::config('parsely.settings')->get('parsely_authors_field_type')==0) {
 
-                return format_username($node);
+                $author = $node->getOwner();
+                return $author->getDisplayName();
 
             } elseif (\Drupal::config('parsely.settings')->get('parsely_authors_field_type')==1) {
-                $node = \Drupal::routeMatch()->getParameter('node');
-
                 $author_field = (\Drupal::config('parsely.settings')->get('parsely_authors_field'));
-                $author = (array)$node->$author_field;
-                $author_node = (array)($node->$author_field);
-                $author = $author_node[\Drupal\Core\Language\Language::LANGCODE_NOT_SPECIFIED][0]['value'];
+                $author_node = (array)($node->get($author_field));
+                $author = $author_node[Language::LANGCODE_NOT_SPECIFIED][0]['value'];
 
                 return $author;
 
             } elseif (\Drupal::config('parsely.settings')->get('parsely_authors_field_type')==2) {
-                $node = \Drupal::routeMatch()->getParameter('node');
-
                 $author_field = (\Drupal::config('parsely.settings')->get('parsely_authors_field'));
-                $author_node = (array)($node->get('author_field'));
-                $author = \Drupal::entityTypeManager()->getStorage('node')->load($author_node[\Drupal\Core\Language\Language::LANGCODE_NOT_SPECIFIED][0]['nid']);
+                $author_node = (array)($node->get($author_field));
+                $author = \Drupal::entityTypeManager()->getStorage('node')->load($author_node[Language::LANGCODE_NOT_SPECIFIED][0]['nid']);
 
                 return $author->get('title');
 
             } else {
 
-                return format_username($node);
+                $author = $node->getOwner();
+                return $author->getDisplayName();
             }
         }
     }
