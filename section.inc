@@ -19,13 +19,11 @@ function parsely_get_section($node) {
     switch($section_logic) {
 
         case 0:
-            $section_id = \Drupal::config('parsely_settings')->get('parsely_section_by_node');
             $section_by_node_type = \Drupal::config('parsely.settings')->get('parsely_nodes');
             if (\Drupal::moduleHandler()->moduleExists('node') && !is_null($section_by_node_type)) {
 
-                $node = \Drupal::routeMatch()->getParameter('node');
-                if (in_array($node->type, $section_by_node_type)) {
-                    $section_name = $node->type;
+                if (in_array($node->getType(), $section_by_node_type)) {
+                    $section_name = $node->getType();
                 }
             }
             break;
