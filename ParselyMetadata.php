@@ -85,6 +85,10 @@ class ParselyMetadata {
         }
     }
 
+    /**
+     * @param $node Node
+     * @return false|string
+     */
     protected function setDate($node) {
 
         $pub_date = NULL;
@@ -92,7 +96,7 @@ class ParselyMetadata {
             $pub_date = $node->published_at;
         }
         else {
-            $pub_date = $node->created;
+            $pub_date = $node->getCreatedTime();
         }
 
         return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
