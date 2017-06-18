@@ -1,0 +1,4 @@
+parsely:
+  version: 0.1
+  js:
+    js/parsely_include.js: {}
