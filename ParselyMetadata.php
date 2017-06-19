@@ -63,14 +63,16 @@ class ParselyMetadata {
                 return $author->getDisplayName();
 
             } elseif (\Drupal::config('parsely.settings')->get('parsely_authors_field_type')==1) {
-                $author_field = (\Drupal::config('parsely.settings')->get('parsely_authors_field'));
+                $parsely_optional_settings = (\Drupal::config('parsely.settings')->get('parsely_optional_settings'));
+                $author_field = $parsely_optional_settings['parsely_authors']['parsely_authors_field'];
                 $author_node = (array)($node->get($author_field));
                 $author = $author_node[Language::LANGCODE_NOT_SPECIFIED][0]['value'];
 
                 return $author;
 
             } elseif (\Drupal::config('parsely.settings')->get('parsely_authors_field_type')==2) {
-                $author_field = (\Drupal::config('parsely.settings')->get('parsely_authors_field'));
+                $parsely_optional_settings = (\Drupal::config('parsely.settings')->get('parsely_optional_settings'));
+                $author_field = $parsely_optional_settings['parsely_authors']['parsely_authors_field'];
                 $author_node = (array)($node->get($author_field));
                 $author = \Drupal::entityTypeManager()->getStorage('node')->load($author_node[Language::LANGCODE_NOT_SPECIFIED][0]['nid']);
 
