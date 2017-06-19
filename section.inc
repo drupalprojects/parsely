@@ -18,7 +18,7 @@ use Drupal\taxonomy\TermStorageInterface;
 function parsely_get_section($node) {
     $section_name = 'Uncategorized';
     $section_term = NULL;
-    $section_logic = \Drupal::config('parsely_settings')->get('parsely_nodes_wrap')['parsely_section_logic'];
+    $section_logic = \Drupal::config('parsely.settings')->get('parsely_section_logic');
 
     switch($section_logic) {
 
@@ -33,9 +33,8 @@ function parsely_get_section($node) {
             break;
 
         case 1:
-            $section_vocabulary_id = \Drupal::config('parsely.settings')->get('parsely_nodes_wrap')['parsely_section_vocabulary'];
-            $section_criterion = \Drupal::config('parsely.settings')->get('parsely_nodes_wrap')['parsely_section_term_criterion'];
-
+            $section_vocabulary_id = \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_vocabulary'];
+            $section_criterion = \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_term_criterion'];
             if (\Drupal::moduleHandler()->moduleExists('taxonomy') && !is_null($section_vocabulary_id)) {
                 // Find the most relevant term from the designated vocab, using the
                 // criterion specified in the module configuration. See
