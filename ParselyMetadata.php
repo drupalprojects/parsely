@@ -25,6 +25,7 @@ class ParselyMetadata {
         $this->keywords = $this->setTags($node);
         $this->articleSection = $this->setSection($node);
 
+
     }
 
     /* ~~~ Setters (protected) ~~~ */
@@ -69,13 +70,7 @@ class ParselyMetadata {
      */
     protected function setDate($node) {
 
-        $pub_date = NULL;
-        if (property_exists($node, 'published_at') && is_numeric($node->published_at)) {
-            $pub_date = $node->published_at;
-        }
-        else {
-            $pub_date = $node->getCreatedTime();
-        }
+        $pub_date = $node->getCreatedTime();
 
         return gmdate("Y-m-d\TH:i:s\Z", $pub_date);
     }
@@ -123,7 +118,7 @@ class ParselyMetadata {
 
     public function getDate() {
 
-        return $this->dateCreated;
+        return $this->datePublished;
 
     }
 
