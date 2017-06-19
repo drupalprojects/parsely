@@ -6,38 +6,50 @@ include('ParselyMetadata.php');
 include('section.inc');
 
 /**
- * Implements hook_page_bottom().
+ * Implements hook_page_attachments().
  */
-function parsely_page_bottom(array &$page_bottom)
-{
-    // TODO: if we're not supposed to track, get outta here
-    $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
-    $markup = <<<EOT
-
-<!-- START Parse.ly Include: Standard -->
-<div id="parsely-root" style="display: none">
-  <div id="parsely-cfg" data-parsely-site="$apikey"></div>
-</div>
-<script>
-(function(s, p, d) {
-  var h=d.location.protocol, i=p+"-"+s,
-    e=d.getElementById(i), r=d.getElementById(p+"-root"),
-    u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
-    :"static."+p+".com";
-  if (e) return;
-  e = d.createElement(s); e.id = i; e.async = true;
-  e.src = h+"//"+u+"/p.js"; r.appendChild(e);
-})("script", "parsely", document);
-</script>
-<!-- END Parse.ly Include: Standard -->
-
-
-EOT;
-}
 
 /**
  * Implements hook_page_attachments().
  */
+function parsely_page_attachments(array &$attachments)
+{
+    $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
+    $parsely_span = '<span id="parsely-cfg" data-parsely-site="'.$apikey.'"></span>';
+
+    $script = <<<EOD
+    (function(s, p, d) {
+      var h=d.location.protocol, i=p+"-"+s,
+          e=d.getElementById(i), r=d.getElementById(p+"-root"),
+          u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
+          :"static."+p+".com";
+      if (e) return;
+      e = d.createElement(s); e.id = i; e.async = true;
+      e.src = h+"//"+u+"/p.js"; r.appendChild(e);
+    })("script", "parsely", document);
+EOD;
+
+    $attachments['#attached']['html_head'][] = [
+        [
+            '#type' => 'html_tag',
+            '#tag' => 'div',
+            '#attributes' => [
+                'id' => 'parsely-root',
+                'style' => 'display: none'
+            ],
+            '#value' => $parsely_span
+        ], 'div_tag'
+    ];
+
+    $attachments['#attached']['html_head'][] = [
+        [
+            '#type' => 'html_tag',
+            '#tag' => 'script',
+            '#value' => new \Drupal\parsely\Component\Render\ParselyRenderer($script)
+        ]
+
+    ];
+}
 /**
  * Implements hook_page_top().
  */
