@@ -38,7 +38,7 @@ EOD;
     $parsely_metadata = new \Drupal\parsely\ParselyMetadata($node);
     $parsely_metas = [
         '@context' => 'schema.org',
-        '@type' => 'NewsArticle',
+        '@type' => $parsely_metadata->getSchemaType(),
         'author' => $parsely_metadata->getCreator(),
         'url' => $parsely_metadata->getURL($node),
         'section' => $parsely_metadata->getSection(),

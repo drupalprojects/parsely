@@ -25,6 +25,7 @@ class ParselyMetadata {
         $this->datePublished = $this->setDate($node);
         $this->keywords = $this->setTags($node);
         $this->articleSection = $this->setSection($node);
+        $this->schemaType = $this->setSchemaType($node);
 
 
     }
@@ -48,6 +49,23 @@ class ParselyMetadata {
         $node_id = $node->id();
         return $prefix.$node_id;
 
+    }
+
+
+    /**
+     * @param $node Node
+     * @return string
+     */
+    protected function setSchemaType($node) {
+        $schema_type = 'WebPage';
+        $nodeTypes = \Drupal::config('parsely.settings')->get('parsely_nodes_wrap')['parsely_nodes'];
+        $current_node_type = $node->getType();
+        foreach ($nodeTypes as $key => $value) {
+            if ($current_node_type == $key && $value) {
+                $schema_type = 'NewsArticle';
+                }
+        }
+        return $schema_type;
     }
 
 
@@ -149,6 +167,10 @@ class ParselyMetadata {
 
         return $this->keywords;
 
+    }
+
+    public function getSchemaType() {
+        return $this->schemaType;
     }
 
     /**
