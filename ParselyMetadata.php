@@ -5,6 +5,7 @@ use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Psr\Log\InvalidArgumentException;
 
 class ParselyMetadata {
 
@@ -87,16 +88,26 @@ class ParselyMetadata {
         if (!\Drupal::moduleHandler()->moduleExists('taxonomy') || $vocabularies === NULL || $vocabularies === '') {
             return array();
         }
-        foreach($vocabularies as $vocab) {
+        foreach($vocabularies as $vocab => $value) {
             $entity = Vocabulary::load($vocab);
 //            $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($entity->id());
             $clean_term_name = $entity->get('vid');
-            $term_ids = $node->get('field_'.$clean_term_name)->getValue();
-
-            foreach ($term_ids as $term_id) {
-                    $term_name = Term::load($term_id['target_id'])->getName();
-                   array_push($tags, $term_name);
+            try {
+                $term_ids = $node->get('field_'.$clean_term_name)->getValue();
             }
+            catch (\InvalidArgumentException $e) {
+                $term_ids = NULL;
+            }
+
+
+            if ($term_ids) {
+                foreach ($term_ids as $term_id) {
+                    $term_name = Term::load($term_id['target_id'])->getName();
+
+                    array_push($tags, $term_name);
+                }
+            }
+
         }
         return $tags;
     }
@@ -140,8 +151,13 @@ class ParselyMetadata {
 
     }
 
+    /**
+     * @param $node Node
+     * @return string
+     */
     public function getURL($node) {
-        return Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE]);
+        $result = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
+        return $result;
     }
 
 }
