@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 include('ParselyMetadata.php');
@@ -38,11 +39,11 @@ EOD;
     $parsely_metas = [
         '@context' => 'schema.org',
         '@type' => 'NewsArticle',
-//        'author' => $parsely_metadata->getCreator(),
-//        'url' => $parsely_metadata->getURL($node),
-//        'section' => $parsely_metadata->getSection(),
-//        'keywords' => $parsely_metadata->getTags(),
-//        'datePublished' => $parsely_metadata->getDate(),
+        'author' => $parsely_metadata->getCreator(),
+        'url' => $parsely_metadata->getURL($node),
+        'section' => $parsely_metadata->getSection(),
+        'keywords' => $parsely_metadata->getTags(),
+        'datePublished' => $parsely_metadata->getDate(),
     ];
 
     $parsely_tag = [
@@ -79,4 +80,31 @@ EOD;
     ];
 }
 
+function parsely_should_add_metas() {
 
+    // This may appear verbose but fixes the write context error.
+    $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if (!$apikey|!$node) {
+        return FALSE;
+    }
+
+    $path = Unicode::strtolower(\Drupal::service('path.current')->getPath());
+    $alias = Unicode::strtolower(\Drupal::service('path.alias_manager')->getAliasByPath($path));
+    $paths_to_ignore = \Drupal::config('parsely.settings')->get('paths_to_ignore');
+
+    if(!empty($paths_to_ignore)) {
+
+        $pathsToIgnore = preg_split('/[\s]+/', $paths_to_ignore);
+
+        foreach ($pathsToIgnore as $ignore_path) {
+
+            if (\Drupal::service('path.matcher')->matchPath($path, $ignore_path)|\Drupal::service('path.matcher')->matchPath($alias, $ignore_path))
+            {
+                return FALSE;
+            }
+        }
+    }
+
+    return TRUE;
+}
