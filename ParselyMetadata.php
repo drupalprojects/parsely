@@ -4,8 +4,6 @@ use Drupal\Core\Language\Language;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\taxonomy\TermStorage;
-use Drupal\taxonomy\TermStorageInterface;
 
 class ParselyMetadata {
 
@@ -20,7 +18,6 @@ class ParselyMetadata {
     protected   $url;
 
     public function __construct($node) {
-
         $this->articleID = $this->setID($node);
         $this->creator = $this->setCreator($node);
         $this->datePublished = $this->setDate($node);
@@ -60,7 +57,6 @@ class ParselyMetadata {
      */
 
     protected function setCreator($node) {
-        if (!isset($author_field)) {
             if(\Drupal::config('parsely.settings')->get('parsely_authors_field_type')==0) {
 
                 $author = $node->getOwner();
@@ -85,7 +81,6 @@ class ParselyMetadata {
                 $author = $node->getOwner();
                 return $author->getDisplayName();
             }
-        }
     }
 
 
@@ -168,7 +163,7 @@ class ParselyMetadata {
     }
 
     public function getURL($node) {
-        return Url::fromRoute('entity.node.canonical', ['node' => $node->nid], ['absolute' => TRUE]);
+        return Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE]);
     }
 
 }
