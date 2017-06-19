@@ -11,4 +11,4 @@ parsely_ignore: ''
 parsely_section_by_node: ''
 parsely_section_logic: ''
 parsely_tag_vocabularies: []
-parsely_nodes_wrap: ['parsely_nodes': []]
+parsely_nodes: []

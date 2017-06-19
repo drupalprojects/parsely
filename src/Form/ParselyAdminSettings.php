@@ -100,17 +100,14 @@ class ParselyAdminSettings extends ConfigFormBase {
                 '#description' => t('<em>Select which node types to track. (Note: If you selected use node types above, these will be your available sections.)</em>'),
                 //'#collapsible' => TRUE,
                 //'#collapsed' => FALSE,
+                '#tree' => TRUE,
             ];
 
-            // @FIXME
-            // Could not extract the default value because it is either indeterminate, or
-            // not scalar. You'll need to provide a default value in
-            // config/install/parsely.settings.yml and config/schema/parsely.schema.yml.
             $form['parsely_nodes_wrap']['parsely_nodes'] = [
                 '#type' => 'checkboxes',
                 '#title' => t('Available node types:'),
                 '#options' => $node_types,
-                '#default_value' => \Drupal::config('parsely.settings')->get('parsely_nodes'),
+                '#default_value' => \Drupal::config('parsely.settings')->get('parsely_nodes_wrap')['parsely_nodes'],
             ];
 
         }
@@ -122,6 +119,7 @@ class ParselyAdminSettings extends ConfigFormBase {
                 '#title' => t('Use Taxonomy Term as Section Settings'),
                 '#collapsible' => TRUE,
                 '#collapsed' => FALSE,
+                '#tree' => TRUE
             ];
 
             $form['parsely_tag_vocabularies'] = [
@@ -137,7 +135,7 @@ class ParselyAdminSettings extends ConfigFormBase {
                 '#title' => t('Section Vocabulary'),
                 '#options' => $this->_parsely_vocab_array_format(Vocabulary::loadMultiple()),
                 '#description' => t('Select the taxonomy vocabulary to use for Parse.ly sections. A single term from this vocabulary will be chosen for each tracked node, where applicable, using the criterion specified below.'),
-                '#default_value' => \Drupal::config('parsely.settings')->get('parsely_section_vocabulary'),
+                '#default_value' => \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_vocabulary']
             ];
             $form['parsely_sections_tax_wrapper']['parsely_section_term_criterion'] = [
                 '#title' => t('Section Term Selection Criteria'),
@@ -153,7 +151,7 @@ class ParselyAdminSettings extends ConfigFormBase {
                 // appears first in the set of terms for a given term/entity reference
                 // field," etc.
                 '#description' => t('If a given node may be associated with multiple terms from the vocabulary you selected above, this setting can help determine which term to use. "First term" and "Last term" will choose a term based on the date/time the term was created (this may differ from the relative position of a term within a term reference field). For hierarchical vocabularies, you can also opt to use the "Highest-level ancestor" of a given term, which means that if a given node is tagged with a lower-lever term (e.g. corresponding to a subsection of your site), we will report that term\'s parent (or grandparent, etc.) term as the section. Wherever a choice must be made between terms at the same depth, the first term will be chosen.'),
-                '#default_value' => \Drupal::config('parsely.settings')->get('parsely_section_term_criterion'),
+                '#default_value' => \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_term_criterion']
             ];
 
 
@@ -238,6 +236,7 @@ class ParselyAdminSettings extends ConfigFormBase {
             '#title' => t('Advanced Settings'),
             '#collapsible' => TRUE,
             '#collapsed' => FALSE,
+            '#tree' => TRUE
         ];
         $form['parsely_optional_settings']['parsely_track_auth_users'] = [
             '#type' => 'radios',
@@ -247,19 +246,19 @@ class ParselyAdminSettings extends ConfigFormBase {
                 1 => t('Yes'),
                 0 => t('No'),
             ],
-            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_track_auth_users'),
+            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_optional_settings')['parsely_track_auth_users'],
         ];
         $form['parsely_optional_settings']['parsely_content_id_prefix'] = [
             '#type' => 'textfield',
             '#title' => t('Content ID Prefix'),
             '#description' => t('If you use more than one content management system (e.g. Drupal and WordPress), you may end up with duplicate content IDs. Adding a Content ID Prefix will ensure the content IDs from Drupal will not conflict with other content management systems.'),
-            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_content_id_prefix'),
+            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_optional_settings')['parsely_content_id_prefix'],
         ];
         $form['parsely_optional_settings']['parsely_metadata_thumbnail_url'] = [
             '#type' => 'textfield',
             '#title' => t('Override default thumbnail?'),
             '#description' => t('Enter the machine name of an image field.'),
-            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_metadata_thumbnail_url'),
+            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_optional_settings')['parsely_metadata_thumbnail_url'],
             '#maxlength' => 1024,
         ];
         $form['parsely_optional_settings']['parsely_authors'] = [
@@ -267,7 +266,7 @@ class ParselyAdminSettings extends ConfigFormBase {
             '#title' => t('Multiple Authors Support'),
             '#description' => t('Setting for sites not using the standard configuration for content authoring.'),
             '#collapsible' => TRUE,
-            '#collapsed' => FALSE,
+            '#collapsed' => FALSE
         ];
         $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field'] = [
             '#type' => 'textfield',
@@ -295,7 +294,7 @@ class ParselyAdminSettings extends ConfigFormBase {
         $form['parsely_debug_settings']['parsely_debug'] = [
             '#type' => 'checkbox',
             '#title' => t('Debugging on?'),
-            '#description' => t('Toggle this on to dump your Parsley data on every tracked page. <em>NB. You must have the Administer Parsely permission to view this data.</em>'),
+            '#description' => t('Toggle this on to dump your Parsely data on every tracked page. <em>NB. You must have the Administer Parsely permission to view this data.</em>'),
             '#default_value' => \Drupal::config('parsely.settings')->get('parsely_debug'),
         ];
 

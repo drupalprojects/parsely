@@ -30,8 +30,5 @@ parsely.settings:
       type: string
     parsely_tag_vocabularies:
       type: array
-    parsely_nodes_wrap:
-      type: mapping
-      mapping:
-        parsely_nodes:
-          type: array
+    parsely_nodes:
+      type: array
