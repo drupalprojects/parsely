@@ -3,6 +3,7 @@ namespace Drupal\parsely;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 
 class ParselyMetadata {
@@ -86,16 +87,20 @@ class ParselyMetadata {
      */
     protected function setTags($node) {
 
-
+        $tags = [];
         $vocabularies = \Drupal::config('parsely.settings')->get('parsely_tag_vocabularies');
         if (!\Drupal::moduleHandler()->moduleExists('taxonomy') || $vocabularies === NULL || $vocabularies === '') {
             return array();
         }
         foreach($vocabularies as $vocab) {
             $entity = Vocabulary::load($vocab);
-            $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($entity->id());
-            foreach ($terms as $term) {
-                array_push($tags, $term->get('name'));
+//            $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($entity->id());
+            $clean_term_name = $entity->get('vid');
+            $term_ids = $node->get('field_'.$clean_term_name)->getValue();
+
+            foreach ($term_ids as $term_id) {
+                    $term_name = Term::load($term_id['target_id'])->getName();
+                   array_push($tags, $term_name);
             }
         }
         return $tags;

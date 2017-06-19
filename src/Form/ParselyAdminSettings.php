@@ -261,30 +261,6 @@ class ParselyAdminSettings extends ConfigFormBase {
             '#default_value' => \Drupal::config('parsely.settings')->get('parsely_optional_settings')['parsely_metadata_thumbnail_url'],
             '#maxlength' => 1024,
         ];
-        $form['parsely_optional_settings']['parsely_authors'] = [
-            '#type' => 'fieldset',
-            '#title' => t('Multiple Authors Support'),
-            '#description' => t('Setting for sites not using the standard configuration for content authoring.'),
-            '#collapsible' => TRUE,
-            '#collapsed' => FALSE
-        ];
-        $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field'] = [
-            '#type' => 'textfield',
-            '#title' => t('Multiple Authors Support'),
-            '#description' => t('If your site supports multiple authors per node, enter the author field machine_name here.'),
-            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_authors_field'),
-        ];
-        $form['parsely_optional_settings']['parsely_authors']['parsely_authors_field_type'] = [
-            '#type' => 'radios',
-            '#title' => t('Multiple Authors Field Type'),
-            '#description' => t('Indicate whether your custom author field is uses a reference.'),
-            '#options' => [
-                'N/A',
-                'field',
-                'node reference',
-            ],
-            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_authors_field_type'),
-        ];
         $form['parsely_debug_settings'] = [
             '#type' => 'fieldset',
             '#title' => t('Debug'),
