@@ -20,8 +20,6 @@ parsely.settings:
       type: string
     parsely_apikey:
       type: string
-    parsely_nodes:
-      type: array
     parsely_ignore:
       type: string
     parsely_track_auth_users:
@@ -32,3 +30,8 @@ parsely.settings:
       type: string
     parsely_tag_vocabularies:
       type: array
+    parsely_nodes_wrap:
+      type: mapping
+      mapping:
+        parsely_nodes:
+          type: array
