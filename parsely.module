@@ -15,6 +15,11 @@ include('section.inc');
 function parsely_page_attachments(array &$attachments)
 {
     $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if (!$apikey|!$node) {
+        return;
+    }
+
     $parsely_span = '<span id="parsely-cfg" data-parsely-site="'.$apikey.'"></span>';
 
     $script = <<<EOD
@@ -28,6 +33,26 @@ function parsely_page_attachments(array &$attachments)
       e.src = h+"//"+u+"/p.js"; r.appendChild(e);
     })("script", "parsely", document);
 EOD;
+
+    $parsely_metadata = new \Drupal\parsely\ParselyMetadata($node);
+    $parsely_metas = [
+        '@context' => 'schema.org',
+        '@type' => 'NewsArticle',
+//        'author' => $parsely_metadata->getCreator(),
+//        'url' => $parsely_metadata->getURL($node),
+//        'section' => $parsely_metadata->getSection(),
+//        'keywords' => $parsely_metadata->getTags(),
+//        'datePublished' => $parsely_metadata->getDate(),
+    ];
+
+    $parsely_tag = [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => [
+            'type' => 'application/ld+json'
+        ],
+        '#value' => new \Drupal\parsely\Component\Render\ParselyRenderer(json_encode($parsely_metas))
+        ];
 
     $attachments['#attached']['html_head'][] = [
         [
@@ -47,35 +72,11 @@ EOD;
             '#tag' => 'script',
             '#value' => new \Drupal\parsely\Component\Render\ParselyRenderer($script)
         ]
+    ];
 
+    $attachments['#attached']['html_head'][] = [
+      [$parsely_tag, 'parsely_tag']
     ];
 }
-/**
- * Implements hook_page_top().
- */
-//function parsely_page_top(array &$page_top)
-//{
-//    $node = \Drupal::routeMatch()->getParameter('node');
-//    if ($node) {
-//        $parsely_metadata = new ParselyMetadata($node);
-//        $parsely_metas = [
-//            '@context' => 'schema.org',
-//            '@type' => 'NewsArticle',
-//            'author' => $parsely_metadata->getCreator(),
-//            'url' => $parsely_metadata->getURL($node),
-//            'section' => $parsely_metadata->getSection(),
-//            'keywords' => $parsely_metadata->getTags(),
-//            'datePublished' => $parsely_metadata->getDate(),
-//        ];
-//        $parsely_tag = [
-//            '#tag' => 'script',
-//            '#attributes' => [
-//                'type' => 'application/ld+json'
-//            ],
-//            '#value' => json_encode('floog')
-//        ];
-//        $page_top['parsely'] = array('#attached' => $parsely_tag);
-//}
-//
-//}
+
 
