@@ -52,6 +52,18 @@ class ParselyRecommendedBlock extends BlockBase implements BlockPluginInterface 
 			'#default_value' => isset($config['parsely_recommended_block_published_within']) ? $config['parsely_recommended_block_published_within'] : 10
 		);
 
+		$form['parsely_recommended_block_sort_by'] = array(
+			'#type' => 'select',
+			'#title' => $this->t('Sort By'),
+			'#description' => 'Sort by score (relevance) or recency (when it was published)',
+			'#options' => [
+				'score' => $this->t('score'),
+				'recency' => $this->t('recency'),
+			],
+			'#multiple' => false,
+			'#default_value' => 'score'
+		);
+
 
 
 		return $form;
