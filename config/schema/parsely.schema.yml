@@ -20,8 +20,6 @@ parsely.settings:
       type: string
     parsely_apikey:
       type: string
-    parsely_ignore:
-      type: string
     parsely_track_auth_users:
       type: string
     parsely_section_by_node:

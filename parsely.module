@@ -56,14 +56,6 @@ function parsely_page_attachments(array &$attachments)
     ];
 
     $attachments['#attached']['html_head'][] = [
-        [
-            '#type' => 'html_tag',
-            '#tag' => 'script',
-            '#value' => new \Drupal\parsely\Component\Render\ParselyRenderer($script)
-        ]
-    ];
-
-    $attachments['#attached']['html_head'][] = [
       [$parsely_tag, 'parsely_tag']
     ];
 

@@ -7,7 +7,6 @@ parsely_authors_field: ''
 parsely_authors_field_type: 0
 parsely_debug: ''
 parsely_apikey: ''
-parsely_ignore: ''
 parsely_section_by_node: ''
 parsely_section_logic: ''
 parsely_tag_vocabularies: []

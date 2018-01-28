@@ -157,18 +157,6 @@ class ParselyAdminSettings extends ConfigFormBase {
 
         }
 
-        $parsely_ignore_format = 'text_filter';
-
-        $form['parsely_ignore'] = [
-            '#type' => 'textarea',
-            '#rows' => 5,
-            '#resizable' => TRUE,
-            '#title' => t('Paths to ignore'),
-            '#description' => t('List each path to ignore on its own line'),
-            '#default_value' => \Drupal::config('parsely.settings')->get('parsely_ignore'),
-            '#format' => $parsely_ignore_format,
-        ];
-
 
         // Metadata settings
         $form['parsely_metadata'] = [
