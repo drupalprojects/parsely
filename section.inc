@@ -10,6 +10,7 @@ use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\TermStorage;
 use Drupal\taxonomy\TermStorageInterface;
+use Psr\Log\InvalidArgumentException;
 
 /**
  * @param $node Node
@@ -43,39 +44,30 @@ function parsely_get_section($node) {
 
                 // "First term" or "Last term."
                 $clean_term_name = Vocabulary::load($section_vocabulary_id)->get('vid');
+				$term_ids = $node->get('field_'.$clean_term_name)->getValue();
+				try {
 
-                try {
-                    $term_ids = $node->get('field_'.$clean_term_name)->getValue();
-                }
-                catch (\InvalidArgumentException $e) {
-                    break;
-                }
+				}
+				catch (\InvalidArgumentException $e) {
+					$term_ids = NULL;
+				}
+
 
                 if (count($term_ids) == 1) {
                     $section_name = Term::load($term_ids[0]['target_id'])->getName();
                 }
 
-                elseif ($section_criterion == 'first' | $section_criterion == 'last') {
-                    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($section_vocabulary_id, 0, 1);
-                    foreach($terms as $term) {
-                        array_push($sorted_terms, $term->id());
-                    }
-                    asort($sorted_terms);
+                elseif ($section_criterion == 'first' || $section_criterion == 'last') {
+
+                    asort($term_ids);
                     if ($section_criterion == 'first') {
-                        $section_name = Term::load(array_shift($sorted_terms))->getName();
+                        $section_name = Term::load(array_shift($term_ids)['target_id'])->getName();
                     }
                     elseif ($section_criterion == 'last') {
-                        $section_name = Term::load(array_pop($sorted_terms))->getName();
+                        $section_name = Term::load(array_pop($term_ids)['target_id'])->getName();
                     }
 
                 }
-
-                // "Highest-level ancestor."
-                elseif ($section_criterion == 'ancestor') {
-                    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($section_vocabulary_id, 0);
-
-                }
-
             }
 
             if ($section_term && property_exists($section_term, 'name')) {

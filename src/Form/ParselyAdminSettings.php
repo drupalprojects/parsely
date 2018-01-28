@@ -142,15 +142,14 @@ class ParselyAdminSettings extends ConfigFormBase {
                 '#type' => 'radios',
                 '#options' => [
                     'first' => t('First term'),
-                    'last' => t('Last term'),
-                    'ancestor' => t('Highest-level ancestor'),
+                    'last' => t('Last term')
                 ],
                 // Provide a long-winded explanation of how this impacts term selection.
                 // Note that there's currently no way to say "find the last/newest term,
                 // and then select its highest-level ancestor" or "use the term that
                 // appears first in the set of terms for a given term/entity reference
                 // field," etc.
-                '#description' => t('If a given node may be associated with multiple terms from the vocabulary you selected above, this setting can help determine which term to use. "First term" and "Last term" will choose a term based on the date/time the term was created (this may differ from the relative position of a term within a term reference field). For hierarchical vocabularies, you can also opt to use the "Highest-level ancestor" of a given term, which means that if a given node is tagged with a lower-lever term (e.g. corresponding to a subsection of your site), we will report that term\'s parent (or grandparent, etc.) term as the section. Wherever a choice must be made between terms at the same depth, the first term will be chosen.'),
+                '#description' => t('If a given node may be associated with multiple terms from the vocabulary you selected above, this setting can help determine which term to use. "First term" and "Last term" will choose a term based on the date/time the term was created (this may differ from the relative position of a term within a term reference field).'),
                 '#default_value' => \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_term_criterion']
             ];
 

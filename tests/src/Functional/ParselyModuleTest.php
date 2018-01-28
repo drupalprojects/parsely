@@ -32,6 +32,12 @@ class ParselyModuleTest extends BrowserTestBase {
 		parent::setUp();
 
 		$this->user = $this->drupalCreateUser();
+		$this->node = $this->createNode(array(
+			'title' => 'hello, world!',
+			'type' => 'article'
+		));
+		$this->config = \Drupal::service('config.factory')->getEditable('parsely.settings');
+
 
 	}
 
