@@ -26,6 +26,7 @@ class ParselyMetadata {
         $this->keywords = $this->setTags($node);
         $this->articleSection = $this->setSection($node);
         $this->schemaType = $this->setSchemaType($node);
+        $this->headline = $this->setHeadline($node);
 
 
     }
@@ -81,6 +82,10 @@ class ParselyMetadata {
                 $author = $node->getOwner();
                 return $author->getDisplayName();
     }
+
+	protected function setHeadline($node) {
+		return $node->getTitle();
+	}
 
 
     /**
@@ -166,12 +171,15 @@ class ParselyMetadata {
     public function getTags() {
 
         return $this->keywords;
-
     }
 
     public function getSchemaType() {
         return $this->schemaType;
     }
+
+	public function getHeadline() {
+		return $this->headline;
+	}
 
     /**
      * @param $node Node
