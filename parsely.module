@@ -23,18 +23,6 @@ function parsely_page_attachments(array &$attachments)
 
     $parsely_span = '<span id="parsely-cfg" data-parsely-site="'.$apikey.'"></span>';
 
-    $script = <<<EOD
-    (function(s, p, d) {
-      var h=d.location.protocol, i=p+"-"+s,
-          e=d.getElementById(i), r=d.getElementById(p+"-root"),
-          u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
-          :"static."+p+".com";
-      if (e) return;
-      e = d.createElement(s); e.id = i; e.async = true;
-      e.src = h+"//"+u+"/p.js"; r.appendChild(e);
-    })("script", "parsely", document);
-EOD;
-
     $parsely_metadata = new \Drupal\parsely\ParselyMetadata($node);
     $parsely_metas = [
         '@context' => 'schema.org',
@@ -78,6 +66,9 @@ EOD;
     $attachments['#attached']['html_head'][] = [
       [$parsely_tag, 'parsely_tag']
     ];
+
+    $attachments['#attached']['library'][] = 'parsely/parsely-include';
+    $attachments['#attached']['drupalSettings']['parsely']['parsely-include']['apikey'] = $apikey;
 }
 
 function parsely_should_add_metas() {
