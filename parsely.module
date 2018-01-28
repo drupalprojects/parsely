@@ -32,6 +32,8 @@ function parsely_page_attachments(array &$attachments)
         'section' => $parsely_metadata->getSection(),
         'keywords' => $parsely_metadata->getTags(),
         'datePublished' => $parsely_metadata->getDate(),
+		'headline' => $parsely_metadata->getHeadline(),
+		'thumbnailUrl' => $parsely_metadata->getThumbnail()
     ];
 
     $parsely_tag = [

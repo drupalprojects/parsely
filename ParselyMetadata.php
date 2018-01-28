@@ -27,6 +27,7 @@ class ParselyMetadata {
         $this->articleSection = $this->setSection($node);
         $this->schemaType = $this->setSchemaType($node);
         $this->headline = $this->setHeadline($node);
+		$this->thumbnailUrl = $this->setImageURL($node);
 
 
     }
@@ -51,6 +52,16 @@ class ParselyMetadata {
         return $prefix.$node_id;
 
     }
+
+	protected function setImageURL($node) {
+
+		$file_path = $node->field_image->entity->uri->value;
+		if ($file_path) {
+			$wrapper = \Drupal::service('stream_wrapper_manager')->getViaUri($file_path);
+			return $wrapper->getExternalUrl();
+		}
+		return "";
+	}
 
 
     /**
@@ -179,6 +190,10 @@ class ParselyMetadata {
 
 	public function getHeadline() {
 		return $this->headline;
+	}
+
+	public function getThumbnail() {
+		return $this->thumbnailUrl;
 	}
 
     /**
