@@ -53,6 +53,10 @@ class ParselyMetadata {
 
     }
 
+	/**
+	 * @param $node Node
+	 * @return string
+	 */
 	protected function setImageURL($node) {
 
 		$file_path = $node->field_image->entity->uri->value;
@@ -94,6 +98,10 @@ class ParselyMetadata {
                 return $author->getDisplayName();
     }
 
+	/**
+	 * @param $node Node
+	 * @return string
+	 */
 	protected function setHeadline($node) {
 		return $node->getTitle();
 	}
