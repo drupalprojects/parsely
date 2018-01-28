@@ -17,79 +17,53 @@ function parsely_page_attachments(array &$attachments)
 {
     $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
     $node = \Drupal::routeMatch()->getParameter('node');
-    if (!$apikey|!$node) {
-        return;
+    if (!$apikey || !$node) {
+
     }
 
-    $parsely_span = '<span id="parsely-cfg" data-parsely-site="'.$apikey.'"></span>';
+    else {
+		$parsely_span = '<span id="parsely-cfg" data-parsely-site="'.$apikey.'"></span>';
 
-    $parsely_metadata = new \Drupal\parsely\ParselyMetadata($node);
-    $parsely_metas = [
-        '@context' => 'schema.org',
-        '@type' => $parsely_metadata->getSchemaType(),
-        'author' => $parsely_metadata->getCreator(),
-        'url' => $parsely_metadata->getURL($node),
-        'section' => $parsely_metadata->getSection(),
-        'keywords' => $parsely_metadata->getTags(),
-        'datePublished' => $parsely_metadata->getDate(),
-		'headline' => $parsely_metadata->getHeadline(),
-		'thumbnailUrl' => $parsely_metadata->getThumbnail()
-    ];
+		$parsely_metadata = new \Drupal\parsely\ParselyMetadata($node);
+		$parsely_metas = [
+			'@context' => 'schema.org',
+			'@type' => $parsely_metadata->getSchemaType(),
+			'author' => $parsely_metadata->getCreator(),
+			'url' => $parsely_metadata->getURL($node),
+			'section' => $parsely_metadata->getSection(),
+			'keywords' => $parsely_metadata->getTags(),
+			'datePublished' => $parsely_metadata->getDate(),
+			'headline' => $parsely_metadata->getHeadline(),
+			'thumbnailUrl' => $parsely_metadata->getThumbnail()
+		];
 
-    $parsely_tag = [
-        '#type' => 'html_tag',
-        '#tag' => 'script',
-        '#attributes' => [
-            'type' => 'application/ld+json'
-        ],
-        '#value' => new \Drupal\parsely\Component\Render\ParselyRenderer(json_encode($parsely_metas))
-        ];
+		$parsely_tag = [
+			'#type' => 'html_tag',
+			'#tag' => 'script',
+			'#attributes' => [
+				'type' => 'application/ld+json'
+			],
+			'#value' => new \Drupal\parsely\Component\Render\ParselyRenderer(json_encode($parsely_metas))
+		];
 
-    $attachments['#attached']['html_head'][] = [
-        [
-            '#type' => 'html_tag',
-            '#tag' => 'div',
-            '#attributes' => [
-                'id' => 'parsely-root',
-                'style' => 'display: none'
-            ],
-            '#value' => $parsely_span
-        ], 'div_tag'
-    ];
+		$attachments['#attached']['html_head'][] = [
+			[
+				'#type' => 'html_tag',
+				'#tag' => 'div',
+				'#attributes' => [
+					'id' => 'parsely-root',
+					'style' => 'display: none'
+				],
+				'#value' => $parsely_span
+			], 'div_tag'
+		];
 
-    $attachments['#attached']['html_head'][] = [
-      [$parsely_tag, 'parsely_tag']
-    ];
+		$attachments['#attached']['html_head'][] = [
+			[$parsely_tag, 'parsely_tag']
+		];
 
-    $attachments['#attached']['library'][] = 'parsely/parsely-include';
-    $attachments['#attached']['drupalSettings']['parsely']['parsely-include']['apikey'] = $apikey;
-}
+		$attachments['#attached']['library'][] = 'parsely/parsely-include';
+		$attachments['#attached']['drupalSettings']['parsely']['parsely-include']['apikey'] = $apikey;
+	}
 
-function parsely_should_add_metas() {
-
-    // This may appear verbose but fixes the write context error.
-    $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
-    $node = \Drupal::routeMatch()->getParameter('node');
-    if (!$apikey|!$node) {
-        return FALSE;
-    }
-
-    $path = Unicode::strtolower(\Drupal::service('path.current')->getPath());
-    $alias = Unicode::strtolower(\Drupal::service('path.alias_manager')->getAliasByPath($path));
-    $paths_to_ignore = \Drupal::config('parsely.settings')->get('paths_to_ignore');
-
-    if(!empty($paths_to_ignore)) {
-
-        $pathsToIgnore = preg_split('/[\s]+/', $paths_to_ignore);
-
-        foreach ($pathsToIgnore as $ignore_path) {
-
-            if (\Drupal::service('path.matcher')->matchPath($path, $ignore_path)|\Drupal::service('path.matcher')->matchPath($alias, $ignore_path))
-            {
-                return FALSE;
-            }
-        }
-    }
-
-    return TRUE;
 }

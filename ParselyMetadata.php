@@ -156,7 +156,13 @@ class ParselyMetadata {
 
     protected function setSection($node) {
 
-        return parsely_get_section($node);
+        $section = parsely_get_section($node);
+        // not sure how this ever ends up null, but it does sometimes
+		if ($section == NULL) {
+			$section = 'Uncategorized';
+		}
+    	return $section;
+
 
     }
 
