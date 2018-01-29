@@ -1,5 +1,5 @@
 parsely.settings:
-  type: mapping
+  type: config_object
   label: Settings
   mapping:
     parsely_section_term_criterion:
@@ -20,13 +20,11 @@ parsely.settings:
       type: string
     parsely_apikey:
       type: string
-    parsely_track_auth_users:
-      type: string
     parsely_section_by_node:
       type: string
     parsely_section_logic:
       type: string
     parsely_tag_vocabularies:
-      type: array
+      type: sequence
     parsely_nodes:
-      type: array
+      type: sequence
