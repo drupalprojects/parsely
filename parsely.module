@@ -17,7 +17,9 @@ function parsely_page_attachments(array &$attachments)
 {
     $apikey = \Drupal::config('parsely.settings')->get('parsely_apikey');
     $node = \Drupal::routeMatch()->getParameter('node');
-    if (!$apikey || !$node) {
+    $route = \Drupal::routeMatch()->getRouteObject();
+    $backend_page = is_backend_page($route);
+    if (!$apikey || !$node || $backend_page) {
 
     }
 
@@ -59,11 +61,22 @@ function parsely_page_attachments(array &$attachments)
 		];
 
 		$attachments['#attached']['html_head'][] = [
-			[$parsely_tag, 'parsely_tag']
+			[$parsely_tag, 'parsely_tag'],
 		];
 
 		$attachments['#attached']['library'][] = 'parsely/parsely-include';
 		$attachments['#attached']['drupalSettings']['parsely']['parsely-include']['apikey'] = $apikey;
 	}
 
+}
+
+/**
+ * Checks to see if page is an admin page / node edit page (draft page)
+ * @param $route \Symfony\Component\Routing\Route
+ * @return boolean
+ */
+function is_backend_page($route) {
+	$is_admin = \Drupal::service('router.admin_context')->isAdminRoute($route);
+	$is_edit_page = \Drupal::RouteMatch()->getRouteName() == 'entity.node.edit_form';
+	return ($is_admin || $is_edit_page);
 }

@@ -58,8 +58,10 @@ class ParselyMetadata {
 	 * @return string
 	 */
 	protected function setImageURL($node) {
-
-		$file_path = $node->field_image->entity->uri->value;
+		if (!$node->hasField('field_image')) {
+			return "";
+		}
+			$file_path = $node->get('field_image')->entity->uri->value;
 		if ($file_path) {
 			$wrapper = \Drupal::service('stream_wrapper_manager')->getViaUri($file_path);
 			return $wrapper->getExternalUrl();
