@@ -131,8 +131,10 @@ class ParselyMetadata {
             return array();
         }
         foreach($vocabularies as $vocab => $value) {
+        	if ($value === 0) {
+				continue;
+			}
             $entity = Vocabulary::load($vocab);
-//            $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($entity->id());
             $clean_term_name = $entity->get('vid');
             try {
                 $term_ids = $node->get('field_'.$clean_term_name)->getValue();
