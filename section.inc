@@ -5,6 +5,7 @@ namespace Drupal\parsely;
 /**
  * Attempt to determine the "section" to which a given node belongs.
  */
+use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
@@ -37,6 +38,7 @@ function parsely_get_section($node)
 		case 1:
 			$section_vocabulary_id = \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_vocabulary'];
 			$section_criterion = \Drupal::config('parsely.settings')->get('parsely_sections_tax_wrapper')['parsely_section_term_criterion'];
+
 			if (\Drupal::moduleHandler()->moduleExists('taxonomy') && !is_null($section_vocabulary_id)) {
 				// Find the most relevant term from the designated vocab, using the
 				// criterion specified in the module configuration. See
@@ -45,6 +47,12 @@ function parsely_get_section($node)
 
 				// "First term" or "Last term."
 				$clean_term_name = Vocabulary::load($section_vocabulary_id)->get('vid');
+
+				if ($section_criterion == 'highest') {
+					$term_tree = \Drupal::EntityTypeManager()->getStorage('taxonomy_term')->loadTree($section_vocabulary_id);
+					$section_name = $term_tree[0]->name;
+					break;
+				}
 
 				try {
 					$term_ids = $node->get('field_' . $clean_term_name)->getValue();
@@ -65,20 +73,17 @@ function parsely_get_section($node)
 
 					}
 				}
-
-				if ($section_term && property_exists($section_term, 'name')) {
-					$section_name = $section_term->name;
-				}
 				break;
 
 			}
+	}
 
 			// Allow any module to alter the section name.
-			if ($section_name == NULL) {
-				$section_name = 'Uncategorized';
-			}
-			\Drupal::moduleHandler()->alter('parsely_section', $section_name, $node, $section_term);
-			return $section_name;
-	}
+		if ($section_name == NULL) {
+			$section_name = 'Uncategorized';
+		}
+		\Drupal::moduleHandler()->alter('parsely_section', $section_name, $node, $section_term);
+		return $section_name;
+
 }
 

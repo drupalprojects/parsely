@@ -4,10 +4,11 @@ namespace Drupal\parsely\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Config\Config;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'Hello' Block.
+ * Provides content recommendations based on Parsely's API
  *
  * @Block(
  *   id = "parsely_recommended_widget",

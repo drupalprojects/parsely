@@ -33,9 +33,8 @@ class ParselyAdminSettings extends ConfigFormBase {
     public static function _parsely_vocab_array_format($vocabularies = NULL) {
         $vocab_array = array();
         foreach ($vocabularies as $vocab) {
-            $vocab_array[$vocab->get('vid')] = $vocab->get('name');
+            $vocab_array[$vocab->get('vid')] = t($vocab->get('name'));
         }
-
         return $vocab_array;
     }
 
@@ -142,7 +141,8 @@ class ParselyAdminSettings extends ConfigFormBase {
                 '#type' => 'radios',
                 '#options' => [
                     'first' => t('First term'),
-                    'last' => t('Last term')
+                    'last' => t('Last term'),
+                    'highest' =>t('Highest level ancestor')
                 ],
                 // Provide a long-winded explanation of how this impacts term selection.
                 // Note that there's currently no way to say "find the last/newest term,
@@ -155,27 +155,6 @@ class ParselyAdminSettings extends ConfigFormBase {
 
 
         }
-
-
-        // Metadata settings
-        $form['parsely_metadata'] = [
-            '#type' => 'fieldset',
-            '#title' => t('Metadata'),
-            // '#description' => t('Customize the values reported to Parse.ly for each page. Read more about Parse.ly metadata !here.', array('!here' => l('here', 'http://www.parsely.com/docs/integration/metadata/ppage.html'))),
-
-            '#description' => t('Read more about Parse.ly metadata !here.', [
-                '!here' => \Drupal::l('here', Url::fromUri('http://www.parsely.com/docs/integration/metadata/ppage.html'))
-            ]),
-            '#collapsible' => TRUE,
-            '#collapsed' => TRUE,
-        ];
-        // Thumbnail image.
-
-        $logo_url = ltrim(theme_get_setting('logo', \Drupal::theme()->getActiveTheme()->getName()), '/');
-        if ($logo_url) {
-            $logo_url = URL::fromURI($logo_url, array('absolute' => TRUE));
-        }
-
 
 
         if (\Drupal::moduleHandler()->moduleExists('token')) {
@@ -260,7 +239,6 @@ class ParselyAdminSettings extends ConfigFormBase {
             '#description' => t('Toggle this on to dump your Parsely data on every tracked page. <em>NB. You must have the Administer Parsely permission to view this data.</em>'),
             '#default_value' => \Drupal::config('parsely.settings')->get('parsely_debug'),
         ];
-
         return parent::buildForm($form, $form_state);
     }
 
