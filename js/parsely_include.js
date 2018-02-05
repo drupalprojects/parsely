@@ -1,5 +1,5 @@
 (function(d) {
-    var site = drupalSettings.parsely.parsely-include.apikey, // replace with the domain of your site (e.g. parsely.com)
+    var site = drupalSettings.parsely['parsely-include'].apikey, // replace with the domain of your site (e.g. parsely.com)
         b = d.body,
         e = d.createElement("div");
     e.innerHTML = '<span id="parsely-cfg" data-parsely-site="'+site+'"></span>';
